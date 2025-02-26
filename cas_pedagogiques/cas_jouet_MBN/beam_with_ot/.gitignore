@@ -1,0 +1,8 @@
+_beam_outputs_.xml
+beam.xml
+logs/*
+work_*
+job.pkl
+input_cache.csv
+output_cache.csv
+

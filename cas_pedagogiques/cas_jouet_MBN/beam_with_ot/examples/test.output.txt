@@ -1,0 +1,105 @@
+Submitted batch job 46588484
+Create beam model
+Case 1 : Define SLURM function (no cache)
+Create /fscronos/home/C61372/hpc/cas_pedagogiques/cas_jouet_MBN/beam_with_ot/work_14-10-2024_21-18
+Evaluate model
+Create directory =  /fscronos/home/C61372/hpc/cas_pedagogiques/cas_jouet_MBN/beam_with_ot/work_14-10-2024_21-18/simulation_0
+Create local DOE = /fscronos/home/C61372/hpc/cas_pedagogiques/cas_jouet_MBN/beam_with_ot/work_14-10-2024_21-18/simulation_0/14-10-2024_21-18_input_point.csv
+Write the Python evaluation script /fscronos/home/C61372/hpc/cas_pedagogiques/cas_jouet_MBN/beam_with_ot/work_14-10-2024_21-18/simulation_0/14-10-2024_21-18_localSLURMEvaluationFromStudy.py
+Copy resources into /fscronos/home/C61372/hpc/cas_pedagogiques/cas_jouet_MBN/beam_with_ot/work_14-10-2024_21-18/simulation_0
+Copy file /fscronos/home/C61372/hpc/cas_pedagogiques/cas_jouet_MBN/beam_with_ot/beam_input_template.xml to /fscronos/home/C61372/hpc/cas_pedagogiques/cas_jouet_MBN/beam_with_ot/work_14-10-2024_21-18/simulation_0
+Copy file /fscronos/home/C61372/hpc/cas_pedagogiques/cas_jouet_MBN/beam_with_ot/BeamFunction.py to /fscronos/home/C61372/hpc/cas_pedagogiques/cas_jouet_MBN/beam_with_ot/work_14-10-2024_21-18/simulation_0
+Copy file /fscronos/home/C61372/hpc/cas_pedagogiques/cas_jouet_MBN/beam_with_ot/beam to /fscronos/home/C61372/hpc/cas_pedagogiques/cas_jouet_MBN/beam_with_ot/work_14-10-2024_21-18/simulation_0
+Create directory =  /fscronos/home/C61372/hpc/cas_pedagogiques/cas_jouet_MBN/beam_with_ot/work_14-10-2024_21-18/simulation_1
+Create local DOE = /fscronos/home/C61372/hpc/cas_pedagogiques/cas_jouet_MBN/beam_with_ot/work_14-10-2024_21-18/simulation_1/14-10-2024_21-18_input_point.csv
+Write the Python evaluation script /fscronos/home/C61372/hpc/cas_pedagogiques/cas_jouet_MBN/beam_with_ot/work_14-10-2024_21-18/simulation_1/14-10-2024_21-18_localSLURMEvaluationFromStudy.py
+Copy resources into /fscronos/home/C61372/hpc/cas_pedagogiques/cas_jouet_MBN/beam_with_ot/work_14-10-2024_21-18/simulation_1
+Copy file /fscronos/home/C61372/hpc/cas_pedagogiques/cas_jouet_MBN/beam_with_ot/beam_input_template.xml to /fscronos/home/C61372/hpc/cas_pedagogiques/cas_jouet_MBN/beam_with_ot/work_14-10-2024_21-18/simulation_1
+Copy file /fscronos/home/C61372/hpc/cas_pedagogiques/cas_jouet_MBN/beam_with_ot/BeamFunction.py to /fscronos/home/C61372/hpc/cas_pedagogiques/cas_jouet_MBN/beam_with_ot/work_14-10-2024_21-18/simulation_1
+Copy file /fscronos/home/C61372/hpc/cas_pedagogiques/cas_jouet_MBN/beam_with_ot/beam to /fscronos/home/C61372/hpc/cas_pedagogiques/cas_jouet_MBN/beam_with_ot/work_14-10-2024_21-18/simulation_1
+Create directory =  /fscronos/home/C61372/hpc/cas_pedagogiques/cas_jouet_MBN/beam_with_ot/work_14-10-2024_21-18/simulation_2
+Create local DOE = /fscronos/home/C61372/hpc/cas_pedagogiques/cas_jouet_MBN/beam_with_ot/work_14-10-2024_21-18/simulation_2/14-10-2024_21-18_input_point.csv
+Write the Python evaluation script /fscronos/home/C61372/hpc/cas_pedagogiques/cas_jouet_MBN/beam_with_ot/work_14-10-2024_21-18/simulation_2/14-10-2024_21-18_localSLURMEvaluationFromStudy.py
+Copy resources into /fscronos/home/C61372/hpc/cas_pedagogiques/cas_jouet_MBN/beam_with_ot/work_14-10-2024_21-18/simulation_2
+Copy file /fscronos/home/C61372/hpc/cas_pedagogiques/cas_jouet_MBN/beam_with_ot/beam_input_template.xml to /fscronos/home/C61372/hpc/cas_pedagogiques/cas_jouet_MBN/beam_with_ot/work_14-10-2024_21-18/simulation_2
+Copy file /fscronos/home/C61372/hpc/cas_pedagogiques/cas_jouet_MBN/beam_with_ot/BeamFunction.py to /fscronos/home/C61372/hpc/cas_pedagogiques/cas_jouet_MBN/beam_with_ot/work_14-10-2024_21-18/simulation_2
+Copy file /fscronos/home/C61372/hpc/cas_pedagogiques/cas_jouet_MBN/beam_with_ot/beam to /fscronos/home/C61372/hpc/cas_pedagogiques/cas_jouet_MBN/beam_with_ot/work_14-10-2024_21-18/simulation_2
+Create directory =  /fscronos/home/C61372/hpc/cas_pedagogiques/cas_jouet_MBN/beam_with_ot/work_14-10-2024_21-18/simulation_3
+Create local DOE = /fscronos/home/C61372/hpc/cas_pedagogiques/cas_jouet_MBN/beam_with_ot/work_14-10-2024_21-18/simulation_3/14-10-2024_21-18_input_point.csv
+Write the Python evaluation script /fscronos/home/C61372/hpc/cas_pedagogiques/cas_jouet_MBN/beam_with_ot/work_14-10-2024_21-18/simulation_3/14-10-2024_21-18_localSLURMEvaluationFromStudy.py
+Copy resources into /fscronos/home/C61372/hpc/cas_pedagogiques/cas_jouet_MBN/beam_with_ot/work_14-10-2024_21-18/simulation_3
+Copy file /fscronos/home/C61372/hpc/cas_pedagogiques/cas_jouet_MBN/beam_with_ot/beam_input_template.xml to /fscronos/home/C61372/hpc/cas_pedagogiques/cas_jouet_MBN/beam_with_ot/work_14-10-2024_21-18/simulation_3
+Copy file /fscronos/home/C61372/hpc/cas_pedagogiques/cas_jouet_MBN/beam_with_ot/BeamFunction.py to /fscronos/home/C61372/hpc/cas_pedagogiques/cas_jouet_MBN/beam_with_ot/work_14-10-2024_21-18/simulation_3
+Copy file /fscronos/home/C61372/hpc/cas_pedagogiques/cas_jouet_MBN/beam_with_ot/beam to /fscronos/home/C61372/hpc/cas_pedagogiques/cas_jouet_MBN/beam_with_ot/work_14-10-2024_21-18/simulation_3
+Create directory =  /fscronos/home/C61372/hpc/cas_pedagogiques/cas_jouet_MBN/beam_with_ot/work_14-10-2024_21-18/simulation_4
+Create local DOE = /fscronos/home/C61372/hpc/cas_pedagogiques/cas_jouet_MBN/beam_with_ot/work_14-10-2024_21-18/simulation_4/14-10-2024_21-18_input_point.csv
+Write the Python evaluation script /fscronos/home/C61372/hpc/cas_pedagogiques/cas_jouet_MBN/beam_with_ot/work_14-10-2024_21-18/simulation_4/14-10-2024_21-18_localSLURMEvaluationFromStudy.py
+Copy resources into /fscronos/home/C61372/hpc/cas_pedagogiques/cas_jouet_MBN/beam_with_ot/work_14-10-2024_21-18/simulation_4
+Copy file /fscronos/home/C61372/hpc/cas_pedagogiques/cas_jouet_MBN/beam_with_ot/beam_input_template.xml to /fscronos/home/C61372/hpc/cas_pedagogiques/cas_jouet_MBN/beam_with_ot/work_14-10-2024_21-18/simulation_4
+Copy file /fscronos/home/C61372/hpc/cas_pedagogiques/cas_jouet_MBN/beam_with_ot/BeamFunction.py to /fscronos/home/C61372/hpc/cas_pedagogiques/cas_jouet_MBN/beam_with_ot/work_14-10-2024_21-18/simulation_4
+Copy file /fscronos/home/C61372/hpc/cas_pedagogiques/cas_jouet_MBN/beam_with_ot/beam to /fscronos/home/C61372/hpc/cas_pedagogiques/cas_jouet_MBN/beam_with_ot/work_14-10-2024_21-18/simulation_4
+Create directory =  /fscronos/home/C61372/hpc/cas_pedagogiques/cas_jouet_MBN/beam_with_ot/work_14-10-2024_21-18/simulation_5
+Create local DOE = /fscronos/home/C61372/hpc/cas_pedagogiques/cas_jouet_MBN/beam_with_ot/work_14-10-2024_21-18/simulation_5/14-10-2024_21-18_input_point.csv
+Write the Python evaluation script /fscronos/home/C61372/hpc/cas_pedagogiques/cas_jouet_MBN/beam_with_ot/work_14-10-2024_21-18/simulation_5/14-10-2024_21-18_localSLURMEvaluationFromStudy.py
+Copy resources into /fscronos/home/C61372/hpc/cas_pedagogiques/cas_jouet_MBN/beam_with_ot/work_14-10-2024_21-18/simulation_5
+Copy file /fscronos/home/C61372/hpc/cas_pedagogiques/cas_jouet_MBN/beam_with_ot/beam_input_template.xml to /fscronos/home/C61372/hpc/cas_pedagogiques/cas_jouet_MBN/beam_with_ot/work_14-10-2024_21-18/simulation_5
+Copy file /fscronos/home/C61372/hpc/cas_pedagogiques/cas_jouet_MBN/beam_with_ot/BeamFunction.py to /fscronos/home/C61372/hpc/cas_pedagogiques/cas_jouet_MBN/beam_with_ot/work_14-10-2024_21-18/simulation_5
+Copy file /fscronos/home/C61372/hpc/cas_pedagogiques/cas_jouet_MBN/beam_with_ot/beam to /fscronos/home/C61372/hpc/cas_pedagogiques/cas_jouet_MBN/beam_with_ot/work_14-10-2024_21-18/simulation_5
+Create directory =  /fscronos/home/C61372/hpc/cas_pedagogiques/cas_jouet_MBN/beam_with_ot/work_14-10-2024_21-18/simulation_6
+Create local DOE = /fscronos/home/C61372/hpc/cas_pedagogiques/cas_jouet_MBN/beam_with_ot/work_14-10-2024_21-18/simulation_6/14-10-2024_21-18_input_point.csv
+Write the Python evaluation script /fscronos/home/C61372/hpc/cas_pedagogiques/cas_jouet_MBN/beam_with_ot/work_14-10-2024_21-18/simulation_6/14-10-2024_21-18_localSLURMEvaluationFromStudy.py
+Copy resources into /fscronos/home/C61372/hpc/cas_pedagogiques/cas_jouet_MBN/beam_with_ot/work_14-10-2024_21-18/simulation_6
+Copy file /fscronos/home/C61372/hpc/cas_pedagogiques/cas_jouet_MBN/beam_with_ot/beam_input_template.xml to /fscronos/home/C61372/hpc/cas_pedagogiques/cas_jouet_MBN/beam_with_ot/work_14-10-2024_21-18/simulation_6
+Copy file /fscronos/home/C61372/hpc/cas_pedagogiques/cas_jouet_MBN/beam_with_ot/BeamFunction.py to /fscronos/home/C61372/hpc/cas_pedagogiques/cas_jouet_MBN/beam_with_ot/work_14-10-2024_21-18/simulation_6
+Copy file /fscronos/home/C61372/hpc/cas_pedagogiques/cas_jouet_MBN/beam_with_ot/beam to /fscronos/home/C61372/hpc/cas_pedagogiques/cas_jouet_MBN/beam_with_ot/work_14-10-2024_21-18/simulation_6
+Create directory =  /fscronos/home/C61372/hpc/cas_pedagogiques/cas_jouet_MBN/beam_with_ot/work_14-10-2024_21-18/simulation_7
+Create local DOE = /fscronos/home/C61372/hpc/cas_pedagogiques/cas_jouet_MBN/beam_with_ot/work_14-10-2024_21-18/simulation_7/14-10-2024_21-18_input_point.csv
+Write the Python evaluation script /fscronos/home/C61372/hpc/cas_pedagogiques/cas_jouet_MBN/beam_with_ot/work_14-10-2024_21-18/simulation_7/14-10-2024_21-18_localSLURMEvaluationFromStudy.py
+Copy resources into /fscronos/home/C61372/hpc/cas_pedagogiques/cas_jouet_MBN/beam_with_ot/work_14-10-2024_21-18/simulation_7
+Copy file /fscronos/home/C61372/hpc/cas_pedagogiques/cas_jouet_MBN/beam_with_ot/beam_input_template.xml to /fscronos/home/C61372/hpc/cas_pedagogiques/cas_jouet_MBN/beam_with_ot/work_14-10-2024_21-18/simulation_7
+Copy file /fscronos/home/C61372/hpc/cas_pedagogiques/cas_jouet_MBN/beam_with_ot/BeamFunction.py to /fscronos/home/C61372/hpc/cas_pedagogiques/cas_jouet_MBN/beam_with_ot/work_14-10-2024_21-18/simulation_7
+Copy file /fscronos/home/C61372/hpc/cas_pedagogiques/cas_jouet_MBN/beam_with_ot/beam to /fscronos/home/C61372/hpc/cas_pedagogiques/cas_jouet_MBN/beam_with_ot/work_14-10-2024_21-18/simulation_7
+Create directory =  /fscronos/home/C61372/hpc/cas_pedagogiques/cas_jouet_MBN/beam_with_ot/work_14-10-2024_21-18/simulation_8
+Create local DOE = /fscronos/home/C61372/hpc/cas_pedagogiques/cas_jouet_MBN/beam_with_ot/work_14-10-2024_21-18/simulation_8/14-10-2024_21-18_input_point.csv
+Write the Python evaluation script /fscronos/home/C61372/hpc/cas_pedagogiques/cas_jouet_MBN/beam_with_ot/work_14-10-2024_21-18/simulation_8/14-10-2024_21-18_localSLURMEvaluationFromStudy.py
+Copy resources into /fscronos/home/C61372/hpc/cas_pedagogiques/cas_jouet_MBN/beam_with_ot/work_14-10-2024_21-18/simulation_8
+Copy file /fscronos/home/C61372/hpc/cas_pedagogiques/cas_jouet_MBN/beam_with_ot/beam_input_template.xml to /fscronos/home/C61372/hpc/cas_pedagogiques/cas_jouet_MBN/beam_with_ot/work_14-10-2024_21-18/simulation_8
+Copy file /fscronos/home/C61372/hpc/cas_pedagogiques/cas_jouet_MBN/beam_with_ot/BeamFunction.py to /fscronos/home/C61372/hpc/cas_pedagogiques/cas_jouet_MBN/beam_with_ot/work_14-10-2024_21-18/simulation_8
+Copy file /fscronos/home/C61372/hpc/cas_pedagogiques/cas_jouet_MBN/beam_with_ot/beam to /fscronos/home/C61372/hpc/cas_pedagogiques/cas_jouet_MBN/beam_with_ot/work_14-10-2024_21-18/simulation_8
+Create directory =  /fscronos/home/C61372/hpc/cas_pedagogiques/cas_jouet_MBN/beam_with_ot/work_14-10-2024_21-18/simulation_9
+Create local DOE = /fscronos/home/C61372/hpc/cas_pedagogiques/cas_jouet_MBN/beam_with_ot/work_14-10-2024_21-18/simulation_9/14-10-2024_21-18_input_point.csv
+Write the Python evaluation script /fscronos/home/C61372/hpc/cas_pedagogiques/cas_jouet_MBN/beam_with_ot/work_14-10-2024_21-18/simulation_9/14-10-2024_21-18_localSLURMEvaluationFromStudy.py
+Copy resources into /fscronos/home/C61372/hpc/cas_pedagogiques/cas_jouet_MBN/beam_with_ot/work_14-10-2024_21-18/simulation_9
+Copy file /fscronos/home/C61372/hpc/cas_pedagogiques/cas_jouet_MBN/beam_with_ot/beam_input_template.xml to /fscronos/home/C61372/hpc/cas_pedagogiques/cas_jouet_MBN/beam_with_ot/work_14-10-2024_21-18/simulation_9
+Copy file /fscronos/home/C61372/hpc/cas_pedagogiques/cas_jouet_MBN/beam_with_ot/BeamFunction.py to /fscronos/home/C61372/hpc/cas_pedagogiques/cas_jouet_MBN/beam_with_ot/work_14-10-2024_21-18/simulation_9
+Copy file /fscronos/home/C61372/hpc/cas_pedagogiques/cas_jouet_MBN/beam_with_ot/beam to /fscronos/home/C61372/hpc/cas_pedagogiques/cas_jouet_MBN/beam_with_ot/work_14-10-2024_21-18/simulation_9
+Write the jobarray/SLURM bash script /fscronos/home/C61372/hpc/cas_pedagogiques/cas_jouet_MBN/beam_with_ot/work_14-10-2024_21-18/14-10-2024_21-18_jobarray_launcher.sh
+Execute sbatch --output="logs/output.log" --error="logs/error.log" --nodes=1 --cpus-per-task=1 --mem=512 --time="00:05:00" /fscronos/home/C61372/hpc/cas_pedagogiques/cas_jouet_MBN/beam_with_ot/work_14-10-2024_21-18/14-10-2024_21-18_jobarray_launcher.sh
+Wait for results after 0
+Wait for results after 1.0
+Wait for results after 2.0
+Wait for results after 3.0
+Read /fscronos/home/C61372/hpc/cas_pedagogiques/cas_jouet_MBN/beam_with_ot/work_14-10-2024_21-18/simulation_0/14-10-2024_21-18_output_point.csv
+Read /fscronos/home/C61372/hpc/cas_pedagogiques/cas_jouet_MBN/beam_with_ot/work_14-10-2024_21-18/simulation_1/14-10-2024_21-18_output_point.csv
+Read /fscronos/home/C61372/hpc/cas_pedagogiques/cas_jouet_MBN/beam_with_ot/work_14-10-2024_21-18/simulation_2/14-10-2024_21-18_output_point.csv
+Read /fscronos/home/C61372/hpc/cas_pedagogiques/cas_jouet_MBN/beam_with_ot/work_14-10-2024_21-18/simulation_3/14-10-2024_21-18_output_point.csv
+Read /fscronos/home/C61372/hpc/cas_pedagogiques/cas_jouet_MBN/beam_with_ot/work_14-10-2024_21-18/simulation_4/14-10-2024_21-18_output_point.csv
+Read /fscronos/home/C61372/hpc/cas_pedagogiques/cas_jouet_MBN/beam_with_ot/work_14-10-2024_21-18/simulation_5/14-10-2024_21-18_output_point.csv
+Read /fscronos/home/C61372/hpc/cas_pedagogiques/cas_jouet_MBN/beam_with_ot/work_14-10-2024_21-18/simulation_6/14-10-2024_21-18_output_point.csv
+Read /fscronos/home/C61372/hpc/cas_pedagogiques/cas_jouet_MBN/beam_with_ot/work_14-10-2024_21-18/simulation_7/14-10-2024_21-18_output_point.csv
+Read /fscronos/home/C61372/hpc/cas_pedagogiques/cas_jouet_MBN/beam_with_ot/work_14-10-2024_21-18/simulation_8/14-10-2024_21-18_output_point.csv
+Read /fscronos/home/C61372/hpc/cas_pedagogiques/cas_jouet_MBN/beam_with_ot/work_14-10-2024_21-18/simulation_9/14-10-2024_21-18_output_point.csv
+Y = 
+    [ Deviation ]
+0 : [ 0.135383  ]
+1 : [ 0.164954  ]
+2 : [ 0.173071  ]
+3 : [ 0.145394  ]
+4 : [ 0.154326  ]
+5 : [ 0.175463  ]
+6 : [ 0.155062  ]
+7 : [ 0.15373   ]
+8 : [ 0.184005  ]
+9 : [ 0.168632  ]
+Save cache on disk
+Case 2 : Define Wrapper class (with cache)
