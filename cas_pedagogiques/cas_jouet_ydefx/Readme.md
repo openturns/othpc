@@ -152,3 +152,49 @@ A noter aussi qu'il est envisageable d'élargir l'API d'Ydefx pour faciliter son
 On pense ici, par exemple, à l'utilisation directe de n'importe quelle fonction python en tant que fonction d'étude.
 
 Il est important de noter aussi que le mécanisme des modèles d'Ydefx permet l'ajout de modules futures pour des cas d'utilisation qui ne sont pas couverts aujourd'hui. Par exemple, on peut imaginer le traitement du cas où la fonction d'étude est un schéma de calcul complexe, composé d'un enchaînement de plusieurs calculs qui ont des besoins différents en terme de ressources. L'interface "Epylog", utilisée dans la chaîne Odyssée, pourrait répondre à ce type de besoin pour écrire la fonction d'étude.
+
+---------------------------------------------------
+
+# Message d'Ovidiu en date du 26/02/2025
+
+Bonjour à tous,
+
+Quelques remarques sur les deux classes à tester.
+
+## BeamFunction (`cas_pedagogiques/cas_jouet_MBN/beam_local`)
+
+La fonction n'est pas parallélisable car elle modifie toujours les mêmes fichiers (`self.actual_beam_filename` et `self.beam_output_filename`).
+La bonne démarche est de créer un nouveau répertoire pour chaque évaluation pour éviter les conflits.
+
+## CantileverBeam (`cas_pedagogiques/cas_jouet_EFI/cantilever_beam`)
+
+L'exécution parallèle est prise en compte et à part quelques points sur des "bonnes pratiques" cet exemple devrait fonctionner tel quel à la place de la classe MyCode que j'ai fourni en exemple.
+
+1. Le premier point est que les chemins `self.input_template` et `self.my_executable` sont forcés en chemins absolus.
+Ceci fonctionne quand on est en local ou quand on lance avec Slurm depuis la frontale.
+En revanche, ça ne marche plus quand on lance depuis son poste de travail vers cronos, car les chemins peuvent être différents.
+La solution est de mettre les chemins locaux de ces fichiers dans `params.salome_parameters.in_files` pour qu'ils soient copiés dans le répertoire de travail qui est aussi le répertoire courant lors de l'exécution. Donc ces fichiers peuvent être retrouvés en utilisant des chemins relatifs.
+Si les fichiers ne sont pas très gros et qu'il n'y a pas de raison liée à l'occupation disque, je recommande cette pratique même pour le cas où le lancement et l'exécution se font sur le même système de fichiers.
+
+2. Le deuxième point est le changement du répertoire courant (`os.chdir`) dans la fonction `_exec`.
+C'est une source potentielle de problème compliqué à diagnostiquer.
+Le problème est que l'exécution de la fonction `_exec` se fait dans des processus qui sont réutilisés et le changement du répertoire courant lors de l'évaluation d'un point est conservé jusqu'à l'évaluation d'un autre point qui va démarré dans le répertoire courant modifié.
+Salomé et Dask fonctionnent sur le même principe et ils présentent les mêmes risques, donc pratique à éviter.
+Au pire, essayer de revenir au répertoire initial à la fin du calcul et refaire un `chdir` en fin de fonction, mais ça risque de ne pas suffire en cas de plantage du calcul ou dans certains cas d'utilisation de dask où le même processus peut être utilisé pour plusieurs évaluations simultanées.
+
+3. Le troisième point est l'utilisation de la fonction `os.system`.
+Il est préférable d'utiliser `subprocess.run` qui permet aussi de lancer le code dans un répertoire différent (argument `cwd`) sans affecter le processus courant, ce qui est aussi une solution pour éviter les problèmes du point précédent.
+
+Je recommanderais aussi de créer les répertoires temporaires de chaque évaluation en relatif par rapport au répertoire courant pour retrouver tous les éléments de l'exécution dans le répertoire de travail. Je n'ai pas cherché dans les options de `tempfile.TemporaryDirectory` mais je sais qu'il y a moyen de le faire.
+
+En pièce jointe le fichier `cantilever_beam.py` avec les modifications suggérées et le lanceur `run_cronos.py` pour lancer sur cronos depuis un répertoire de son poste de travail qui contient :
+* `cantilever_beam.py`,
+*  `input_doe` (celui de `cas_pedagogiques/cas_jouet_EFI`),
+*  `template` (idem),
+* `ydefxwrapper.py` (celui de `cas_pedagogiques/cas_jouet_ydefx`),
+* `run_cronos.py`
+
+J'ai testé avec un salomé 9.14 sur cronos.
+
+Cordialement,
+Ovidiu
