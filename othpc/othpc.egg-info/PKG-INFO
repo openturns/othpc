@@ -1,0 +1,21 @@
+Metadata-Version: 2.1
+Name: othpc
+Version: 0.0.1
+Summary: Simplifies the evaluation of numerical simulation models on high performance computing facilities
+Author: Elias Fekhari, Joseph Muré, Michaël Baudin
+Author-email: elias.fekhari@edf.fr
+License: LGPLv3+
+Keywords: OpenTURNS,HPC
+Classifier: Environment :: Console
+Classifier: Intended Audience :: Science/Research
+Classifier: Intended Audience :: Developers
+Classifier: Natural Language :: English
+Classifier: Programming Language :: Python :: 3
+Classifier: Topic :: Software Development
+Classifier: Topic :: Scientific/Engineering
+Description-Content-Type: text/markdown
+Requires-Dist: openturns>=1.22
+
+# *othpc* : a Python package to simplify the evaluation of numerical simulation models on high performance computing facilities
+
+To install locally the current development : `pip install -e .`

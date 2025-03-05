@@ -1,23 +1,18 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Copyright (C) EDF 2024
+Copyright (C) EDF 2025
 
-@authors: Elias Fekhari
+@authors: Elias Fekhari, Joseph Muré
 """
 
-import os
-import time
 import pickle
-import numpy as np 
-import pandas as pd
 import openturns as ot
-from argparse import ArgumentParser, FileType
 from dask_jobqueue import SLURMCluster
-from dask.distributed import Client, print, progress, wait
+from dask.distributed import Client, print, progress
 
 
-class DaskWrapper(ot.OpenTURNSPythonFunction):
+class DaskFunction(ot.OpenTURNSPythonFunction):
     """
     The aim of this class is to plug an black box model to an OpenTURNS.PythonFunction object in a HPC environment. 
     This class gives an example of a HPC wrapper for an executable black box model using the Python package Dask (see https://docs.dask.org/en/stable/). 
@@ -25,26 +20,25 @@ class DaskWrapper(ot.OpenTURNSPythonFunction):
     Parameters
     ----------
     callable : openturns.Function
-            The unit function to parallelize on the clusteer
-    verbose : bool 
-            Controls the verbosity, True by default
+            The unit function to parallelize on the cluster
+    csv_dump_file : str 
+            If not None, it writes an input-ouput csv file at the absolute path given. 
 
     Examples
     --------
     >>> input_file_path = "input_doe/doe.csv"
     >>> df_doe = pd.read_csv(input_file_path, index_col=0).reset_index()
     >>> X = ot.Sample.BuildFromDataFrame(df_doe)
-    >>> my_wrapper = DaskWrapper(input_dimension=df_doe.shape[1], output_dimension=1, index_col=0)
+    >>> my_wrapper = DaskFunction(input_dimension=df_doe.shape[1], output_dimension=1, index_col=0)
     >>> g = my_wrapper.get_function()
     >>> Y = g(X)
     """
-    def __init__(self, callable, verbose=True):
+    def __init__(self, callable, csv_dump_file=None):
         # Inherit methods and attributes from the base class "OpenTURNSWrapper"
         super().__init__(callable.getInputDimension(), callable.getOutputDimension())
         self._callable = callable
-        self.verbose = verbose
-        # Path of the beam executable
-        #self.my_executable = os.path.join(self.base_dir, "template/beam")
+        self.csv_dump_file = csv_dump_file
+    
         # SLURM options 
         self.slurm_resources = {
         "nodes-per-job": 1,
@@ -83,16 +77,6 @@ class DaskWrapper(ot.OpenTURNSPythonFunction):
         client = Client(self.cluster)
         print(f'> The dashboard link from the client  : {client.dashboard_link}')
 
-        # # Check that all the workers are up
-        # nb_total_cores = self.slurm_resources["cpus-per-job"] * self.slurm_resources["nb-jobs"]
-        # nb_total_running_cores = sum(client.ncores().values())
-        # while nb_total_running_cores < nb_total_cores: # Waiting for all the CPUs to be up is not the fastest
-        #     pc = int((100 * nb_total_running_cores / nb_total_cores) // 1)
-        #     if self.verbose:
-        #         print(f"RUNNING CORES: {pc}%\t|" + "#" * (pc//5) + " " * (20 - pc//5) + f"| {nb_total_running_cores} / {nb_total_cores}")
-        #     time.sleep(5)
-        #     nb_total_running_cores = sum(client.ncores().values())
-
         # Distribute the evaluations
         futures = client.map(self._callable, X)
         progress(futures)
@@ -100,14 +84,12 @@ class DaskWrapper(ot.OpenTURNSPythonFunction):
         # # mais cela ne semble pas necessaire en pratique
         # wait(futures) # dask.distributed method to wait until all computations are finished or have errored # may not be necessary
         outputs = client.gather(futures) # liste de Points
+        if self.csv_dump_file is not None: 
+            X.stack(outputs)
+            X.exportToCSVFile(self.csv_dump_file, ',')
 
         # # Ces commandes sont peut-etre plus propres mais ne semblent pas indispensables :
         # cluster.close()
         client.shutdown()
 
-        # # attention, pour une raison etrange, outputs (en version LocalCluster) est une liste contenant une liste de listes
-        # # en d'autre termes, il y a un niveau de liste en trop par rapport a l'attendu
-        # # Avec LocalCluster, on est oblige d'utiliser
-        # return outputs[0]
-        # Ce probleme ne se pose pas avec SLURMCluster.
-        return outputs # liste de Points = Sample
+        return outputs 
