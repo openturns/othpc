@@ -1,8 +1,10 @@
 from wrapper_dask import *
 from xml.dom import minidom
 import openturns.coupling_tools as otct
+import otwrapy as otw
 from datetime import datetime
-import tempfile
+import subprocess
+
 
 class CantileverBeam(ot.OpenTURNSPythonFunction):
     def __init__(self, input_template, executable):
@@ -22,7 +24,8 @@ class CantileverBeam(ot.OpenTURNSPythonFunction):
             Since this example presents four inputs (F, E, L, I), the number of columns is five. 
         """
         # Tout se passe dans un repertoire temporaire
-        with tempfile.TemporaryDirectory() as xsimu_dir:
+        with otw.TempWorkDir() as xsimu_dir:
+            
             # Creation du fichier d'entree
             otct.replace(
                 # File template including your tokens to be replaced by values from a design of exp.
@@ -33,12 +36,8 @@ class CantileverBeam(ot.OpenTURNSPythonFunction):
                 [X[0], X[1], X[2], X[3]],
                 )
             # Execution
-            os.chdir(xsimu_dir)
-            try:
-                myexec = os.system(self.my_executable + " -x beam_input.xml")
-            except Exception as err:
-                print(f"ERROR: type {myexec} in {xsimu_dir}")
-                print(err)
+            subprocess.run([self.my_executable, "-x", "beam_input.xml"], check=True, cwd=xsimu_dir)
+
             # Lecture de la sortie
             try:
                 xmldoc = minidom.parse(os.path.join(xsimu_dir, '_beam_outputs_.xml'))

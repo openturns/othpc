@@ -55,6 +55,10 @@ class DaskWrapper(ot.OpenTURNSPythonFunction):
         }
         self.dask_options = ["--wckey=P120K:SALOME",  f"--time={self.slurm_resources["timeout"]}", "--output=logs/output.log", "--error=logs/error.log"]
 
+        # Define Dask object SLURMCluster
+        self.cluster = SLURMCluster(cores=self.slurm_resources["cpus-per-job"],
+                                    memory=f"{self.slurm_resources["mem-per-job"]} MB",
+                                    job_extra_directives=self.dask_options)
 
     def _exec_sample(self, X):
         """
@@ -70,17 +74,13 @@ class DaskWrapper(ot.OpenTURNSPythonFunction):
             This object contains the output results. 
         """
         X = ot.Sample(X)
-        # Define Dask object SLURMCluster
-        cluster = SLURMCluster(cores=self.slurm_resources["cpus-per-job"],
-                               memory=f"{self.slurm_resources["mem-per-job"]} MB",
-                               job_extra_directives=self.dask_options)
 
         # Submit jobs to SLURM
-        cluster.scale(self.slurm_resources["nb-jobs"])
-        print(f'> The dashboard link from the cluster : {cluster.dashboard_link}')
+        self.cluster.scale(self.slurm_resources["nb-jobs"])
+        print(f'> The dashboard link from the cluster : {self.cluster.dashboard_link}')
 
         # Create a Client for the SLURMCluster object
-        client = Client(cluster)
+        client = Client(self.cluster)
         print(f'> The dashboard link from the client  : {client.dashboard_link}')
 
         # # Check that all the workers are up
@@ -95,7 +95,7 @@ class DaskWrapper(ot.OpenTURNSPythonFunction):
 
         # Distribute the evaluations
         futures = client.map(self._callable, X)
-
+        progress(futures)
         # # wait est une methode de dask.distributed servant a attendre que tous les calculs soient finis ou aient renvoye une erreur
         # # mais cela ne semble pas necessaire en pratique
         # wait(futures) # dask.distributed method to wait until all computations are finished or have errored # may not be necessary
@@ -103,7 +103,7 @@ class DaskWrapper(ot.OpenTURNSPythonFunction):
 
         # # Ces commandes sont peut-etre plus propres mais ne semblent pas indispensables :
         # cluster.close()
-        # client.shutdown()
+        client.shutdown()
 
         # # attention, pour une raison etrange, outputs (en version LocalCluster) est une liste contenant une liste de listes
         # # en d'autre termes, il y a un niveau de liste en trop par rapport a l'attendu
