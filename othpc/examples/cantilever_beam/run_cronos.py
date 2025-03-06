@@ -5,13 +5,13 @@ Copyright (C) EDF 2025
 
 @authors: Elias Fekhari, Joseph Muré
 """
+import othpc
 import openturns as ot
 from cantilever_beam import CantileverBeam
-import othpc
 
+X = ot.Sample.ImportFromCSVFile("input_doe/doe.csv", ",")
 cb = CantileverBeam("template/beam_input_template.xml", "template/beam")
 dw = othpc.DaskFunction(cb)
 dwfun = ot.Function(dw)
-X = ot.Sample.ImportFromCSVFile("input_doe/doe100.csv", ",")
 Y = dwfun(X)
 print(Y)

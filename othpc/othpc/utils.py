@@ -15,13 +15,13 @@ class TempWorkDir(object):
 
     """Implement a context manager that creates a temporary working directory.
 
-    Create a temporary working directory on `base_temp_work_dir` preceded by
+    Create a temporary working directory on `work_dir` preceded by
     `prefix` and clean up at the exit if necessary.
     See: http://sametmax.com/les-context-managers-et-le-mot-cle-with-en-python/
 
     Parameters
     ----------
-    base_temp_work_dir : str (optional)
+    work_dir : str (optional)
         Root path where the temporary working directory will be created. If None,
         it will default to the platform dependant temporary working directory
         Default = None
@@ -69,18 +69,21 @@ class TempWorkDir(object):
     /home/aguirre/otwrapy
     """
 
-    def __init__(self, base_temp_work_dir=None, prefix='run-', cleanup=False,
+    def __init__(self, work_dir=None, prefix='simu-', cleanup=False,
                  transfer=None):
-        if base_temp_work_dir is not None:
-            if not os.path.exists(base_temp_work_dir):
-                os.makedirs(base_temp_work_dir)
-        self.dirname = mkdtemp(dir=base_temp_work_dir, prefix=prefix)
+        if work_dir is not None:
+            if not os.path.exists(work_dir):
+                try:
+                # Without the TRY, this line seems to be executed multiple times when using Dask. 
+                # Maybe two processes enter it at the same time. 
+                    os.makedirs(work_dir)
+                except:
+                    pass
+        self.dirname = mkdtemp(dir=work_dir, prefix=prefix)
         self.cleanup = cleanup
         self.transfer = transfer
 
     def __enter__(self):
-        print(f"THIS TempWorkDir!: {os.getcwd()}")
-        print(f"THIS dirname: {self.dirname}")
         if self.transfer is not None:
             for file in self.transfer:
                 if os.path.isfile(file):
@@ -92,7 +95,6 @@ class TempWorkDir(object):
                     raise Exception('In otwrapy.TempWorkDir : the current '
                                     + 'path "{}" is not a file '.format(file)
                                     + 'nor a directory to transfer.')
-
         return self.dirname
 
     def __exit__(self, type, value, traceback):

@@ -15,48 +15,79 @@ import subprocess
 
 
 class CantileverBeam(ot.OpenTURNSPythonFunction):
-    def __init__(self, input_template, executable):
+    def __init__(self, input_template_file, executable_file):
         super().__init__(4, 1)
-        # TODO : check that these files and folders do exist
-        self.input_template = os.path.abspath(input_template)
-        self.my_executable = os.path.abspath(executable)
-
+        # Check that the files and folders do exist
+        if not os.path.isfile(input_template_file):
+            raise ValueError(
+                f"The input template {input_template_file} file does not exist."
+            )
+        self.input_template_file = os.path.abspath(input_template_file)
+        #
+        if not os.path.isfile(executable_file):
+            raise ValueError(f"The executable {executable_file} does not exist.")
+        self.executable_file = os.path.abspath(executable_file)
+        #
         date_tag = datetime.now().strftime("%d-%m-%Y_%H-%M")
-        self.res_dir = os.path.join(os.getcwd(), f"results_{date_tag}")
-        
-    def _exec(self, X):
+        self.work_dir = os.path.join(os.getcwd(), f"workdir_{date_tag}")
+
+    def _create_input_files(self, x, simulation_directory):
         """
-        Executes one evaluation of the black-box model for one input. 
+        Creates one input file which includes the values of the input point x. 
 
         Parameters
         ----------
         x : list
-            This input design of experiment should present an evaluation index in the first colum. 
-            Since this example presents four inputs (F, E, L, I), the number of columns is five. 
+            Input point to be evaluated, in this example, inputs are (F, E, L, I).
+
+        simulation_directory : str
+            Simulation directory dedicated to the evaluation of the input point x. 
         """
+        # Creation du fichier d'entree
+        otct.replace(
+            # File template including your tokens to be replaced by values from a design of exp.
+            self.input_template_file,
+            # File written after replacing the tokens by the values in X
+            os.path.join(simulation_directory, 'beam_input.xml'),
+            ['@F@', '@E@', '@L@', '@I@'],
+            [x[0], x[1], x[2], x[3]],
+            )
+        
+    def _parse_output(self, simulation_directory):
+        """
+        Parses outputs in the simulation directory related to one evaluation and returns output value. 
 
-        with othpc.TempWorkDir(base_temp_work_dir=self.res_dir) as xsimu_dir:
-            # Creation du fichier d'entree
-            otct.replace(
-                # File template including your tokens to be replaced by values from a design of exp.
-                self.input_template,
-                # File written after replacing the tokens by the values in X
-                os.path.join(xsimu_dir, 'beam_input.xml'),
-                ['@F@', '@E@', '@L@', '@I@'],
-                [X[0], X[1], X[2], X[3]],
-                )
+        Parameters
+        ----------
+        simulation_directory : str
+            Simulation directory dedicated to the evaluation of the input point x. 
+        """
+        # Lecture de la sortie
+        try:
+            xmldoc = minidom.parse(os.path.join(simulation_directory, '_beam_outputs_.xml'))
+            itemlist = xmldoc.getElementsByTagName('outputs')
+            Y = float(itemlist[0].attributes['deviation'].value)
+        except FileNotFoundError as err:
+            print(err)
+            print(f"WARNING: the following file was not found: {simulation_directory}")
+            Y = float('nan')
+        return Y
+
+    def _exec(self, x):
+        """
+        Executes one evaluation of the black-box model for one input x. 
+
+        Parameters
+        ----------
+        x : list
+            Input point to be evaluated, in this example, inputs are (F, E, L, I).
+        """
+        with othpc.TempWorkDir(work_dir=self.work_dir) as simu_dir:
+            # Create input files
+            self._create_input_files(x, simu_dir)
             # Execution
-            subprocess.run([self.my_executable, "-x", "beam_input.xml"], check=True, cwd=xsimu_dir)
-
-            # Lecture de la sortie
-            #
-            try:
-                xmldoc = minidom.parse(os.path.join(xsimu_dir, '_beam_outputs_.xml'))
-                itemlist = xmldoc.getElementsByTagName('outputs')
-                deviation = float(itemlist[0].attributes['deviation'].value)
-            except FileNotFoundError as err:
-                print(err)
-                print(f"WARNING: the following file was not found: {xsimu_dir}")
-                deviation = float('nan')
-        return [deviation]
+            subprocess.run([self.executable_file, "-x", "beam_input.xml"], check=True, cwd=simu_dir)
+            # Parse outputs
+            Y = self._parse_output(simu_dir)
+        return [Y]
 

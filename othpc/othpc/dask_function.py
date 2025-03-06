@@ -42,10 +42,10 @@ class DaskFunction(ot.OpenTURNSPythonFunction):
         # SLURM options 
         self.slurm_resources = {
         "nodes-per-job": 1,
-        "cpus-per-job": 1,
+        "cpus-per-job": 5,
         "mem-per-job": 512, # 512 MB
-        "timeout": "00:05:00", # 5 minutes
-        "nb-jobs": 10
+        "timeout": "00:01:00", # 1 minutes
+        "nb-jobs": 2
         }
         self.dask_options = ["--wckey=P120K:SALOME",  f"--time={self.slurm_resources["timeout"]}", "--output=logs/output.log", "--error=logs/error.log"]
 
@@ -84,6 +84,7 @@ class DaskFunction(ot.OpenTURNSPythonFunction):
         # # mais cela ne semble pas necessaire en pratique
         # wait(futures) # dask.distributed method to wait until all computations are finished or have errored # may not be necessary
         outputs = client.gather(futures) # liste de Points
+        
         if self.csv_dump_file is not None: 
             X.stack(outputs)
             X.exportToCSVFile(self.csv_dump_file, ',')
