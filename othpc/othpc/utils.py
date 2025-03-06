@@ -7,6 +7,7 @@ Copyright (C) EDF 2025
 """
 from datetime import datetime
 from tempfile import mkdtemp
+import pandas as pd
 import shutil
 import os
 
@@ -71,7 +72,7 @@ class TempWorkDir(object):
     """
 
     def __init__(self, res_dir, prefix='simu_', cleanup=False, transfer=None):
-        date_tag = datetime.now().strftime("%d-%m-%Y_%H-%M_")
+        date_tag = datetime.now().strftime("%Y-%m-%d_%H-%M_")
         self.dirname = mkdtemp(dir=res_dir, prefix=prefix + date_tag)
         self.cleanup = cleanup
         self.transfer = transfer
@@ -95,8 +96,24 @@ class TempWorkDir(object):
             shutil.rmtree(self.dirname)
 
 
+
+def make_summary_file(simulation_directory, x, y=None):
+    input_description = x.getDescription()
+    output_description = ['Y{i}' for i in range(len(y))]
+    df = pd.DataFrame([], columns=input_description + output_description, index=[simulation_directory])
+    df.loc[input_description, simulation_directory] = x 
+    df.loc[output_description, simulation_directory] = y
+    df.to_csv(os.path.join(simulation_directory, "summary.csv"))
+
+
+
 # TODO: 
 # For each execution of the wrapper, dynamically write the results in a csv summary file 
 # This csv includes the simu corresponding simu directory as a first column 
-# We could automatically isolate the simulations that resulted in errors somewhere else ("failed_simulations_dir")
-# Add a new parsing static method that adds a new output to the summary file for all the existing simu folders  
+
+# >> Solution : write an output file in each simu directory and have a method to gather them at the end 
+
+# Identify the failed executions 
+
+
+# Add a new parsing static method that adds a new output to the summary file for all the existing simu folders

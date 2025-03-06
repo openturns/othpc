@@ -11,16 +11,27 @@ import openturns.coupling_tools as otct
 import othpc
 
 from xml.dom import minidom
-import subprocess
-
 
 class CantileverBeam(ot.OpenTURNSPythonFunction):
+    """
+    This class allows to evaluate the executable of the cantilever beam on various input points. 
+
+    Parameters: 
+    ----------
+    input_template_file : str
+        This input file has been modified with tags replacing the numerical values of the input variables. 
+        
+    executable_file : str
+        TBD
+
+    results_directory : str 
+        TBD
+    """
     def __init__(self, input_template_file, executable_file, results_directory):
         super().__init__(4, 1)
+        #
         if not os.path.isfile(input_template_file):
-            raise ValueError(
-                f"The input template {input_template_file} file does not exist."
-            )
+            raise ValueError(f"The input template {input_template_file} file does not exist.")
         self.input_template_file = os.path.abspath(input_template_file)
         #
         if not os.path.isfile(executable_file):
@@ -29,8 +40,7 @@ class CantileverBeam(ot.OpenTURNSPythonFunction):
         #
         if not os.path.exists(results_directory):
             raise ValueError(f"The working directory {results_directory} does not exist.")
-        self.results_directory = results_directory
-        
+        self.results_directory = os.path.abspath(results_directory)
 
 
     def _create_input_files(self, x, simulation_directory):
@@ -68,12 +78,12 @@ class CantileverBeam(ot.OpenTURNSPythonFunction):
         try:
             xmldoc = minidom.parse(os.path.join(simulation_directory, '_beam_outputs_.xml'))
             itemlist = xmldoc.getElementsByTagName('outputs')
-            Y = float(itemlist[0].attributes['deviation'].value)
+            y = float(itemlist[0].attributes['deviation'].value)
         except FileNotFoundError as err:
             print(err)
             print(f"WARNING: the following file was not found: {simulation_directory}")
-            Y = float('nan')
-        return Y
+            y = float('nan')
+        return y
 
     def _exec(self, x):
         """
@@ -88,8 +98,14 @@ class CantileverBeam(ot.OpenTURNSPythonFunction):
             # Create input files
             self._create_input_files(x, simu_dir)
             # Execution
-            subprocess.run([self.executable_file, "-x", "beam_input.xml"], check=True, cwd=simu_dir)
+            try: 
+                otct.execute(f"{self.executable_file} -x beam_input.xml", cwd=simu_dir)
+            except RuntimeError:
+                # TODO: implement a logging option 
+                return [float("nan")]
             # Parse outputs
-            Y = self._parse_output(simu_dir)
-        return [Y]
+            y = self._parse_output(simu_dir)
+            # Make a summary file including the input and corresponding output
+            othpc.make_summary_file(simu_dir, x, y)
+        return [y]
 
