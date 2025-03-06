@@ -9,15 +9,14 @@ import os
 import openturns as ot
 import openturns.coupling_tools as otct
 import othpc
-from datetime import datetime
+
 from xml.dom import minidom
 import subprocess
 
 
 class CantileverBeam(ot.OpenTURNSPythonFunction):
-    def __init__(self, input_template_file, executable_file):
+    def __init__(self, input_template_file, executable_file, results_directory):
         super().__init__(4, 1)
-        # Check that the files and folders do exist
         if not os.path.isfile(input_template_file):
             raise ValueError(
                 f"The input template {input_template_file} file does not exist."
@@ -28,8 +27,11 @@ class CantileverBeam(ot.OpenTURNSPythonFunction):
             raise ValueError(f"The executable {executable_file} does not exist.")
         self.executable_file = os.path.abspath(executable_file)
         #
-        date_tag = datetime.now().strftime("%d-%m-%Y_%H-%M")
-        self.work_dir = os.path.join(os.getcwd(), f"workdir_{date_tag}")
+        if not os.path.exists(results_directory):
+            raise ValueError(f"The working directory {results_directory} does not exist.")
+        self.results_directory = results_directory
+        
+
 
     def _create_input_files(self, x, simulation_directory):
         """
@@ -82,7 +84,7 @@ class CantileverBeam(ot.OpenTURNSPythonFunction):
         x : list
             Input point to be evaluated, in this example, inputs are (F, E, L, I).
         """
-        with othpc.TempWorkDir(work_dir=self.work_dir) as simu_dir:
+        with othpc.TempWorkDir(res_dir=self.results_directory) as simu_dir:
             # Create input files
             self._create_input_files(x, simu_dir)
             # Execution

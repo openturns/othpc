@@ -80,17 +80,12 @@ class DaskFunction(ot.OpenTURNSPythonFunction):
         # Distribute the evaluations
         futures = client.map(self._callable, X)
         progress(futures)
-        # # wait est une methode de dask.distributed servant a attendre que tous les calculs soient finis ou aient renvoye une erreur
-        # # mais cela ne semble pas necessaire en pratique
-        # wait(futures) # dask.distributed method to wait until all computations are finished or have errored # may not be necessary
         outputs = client.gather(futures) # liste de Points
-        
+
         if self.csv_dump_file is not None: 
             X.stack(outputs)
             X.exportToCSVFile(self.csv_dump_file, ',')
 
-        # # Ces commandes sont peut-etre plus propres mais ne semblent pas indispensables :
-        # cluster.close()
         client.shutdown()
 
         return outputs 

@@ -1,6 +1,7 @@
 .obsidian/*
 
-*result*
+*.log*
+*my_results*
 *workdir*
 *DRAFT*
 *RESU*
@@ -16,3 +17,4 @@
 *SandBox*
 *__pycache__*
 .vscode
+*othpc.egg-info*

@@ -5,7 +5,7 @@ Copyright (C) EDF 2025
 
 @authors: otwrapy
 """
-
+from datetime import datetime
 from tempfile import mkdtemp
 import shutil
 import os
@@ -13,7 +13,8 @@ import os
 
 class TempWorkDir(object):
 
-    """Implement a context manager that creates a temporary working directory.
+    """
+    Implement a context manager that creates a temporary working directory.
 
     Create a temporary working directory on `work_dir` preceded by
     `prefix` and clean up at the exit if necessary.
@@ -69,17 +70,9 @@ class TempWorkDir(object):
     /home/aguirre/otwrapy
     """
 
-    def __init__(self, work_dir=None, prefix='simu-', cleanup=False,
-                 transfer=None):
-        if work_dir is not None:
-            if not os.path.exists(work_dir):
-                try:
-                # Without the TRY, this line seems to be executed multiple times when using Dask. 
-                # Maybe two processes enter it at the same time. 
-                    os.makedirs(work_dir)
-                except:
-                    pass
-        self.dirname = mkdtemp(dir=work_dir, prefix=prefix)
+    def __init__(self, res_dir, prefix='simu_', cleanup=False, transfer=None):
+        date_tag = datetime.now().strftime("%d-%m-%Y_%H-%M_")
+        self.dirname = mkdtemp(dir=res_dir, prefix=prefix + date_tag)
         self.cleanup = cleanup
         self.transfer = transfer
 
@@ -100,3 +93,10 @@ class TempWorkDir(object):
     def __exit__(self, type, value, traceback):
         if self.cleanup:
             shutil.rmtree(self.dirname)
+
+
+# TODO: 
+# For each execution of the wrapper, dynamically write the results in a csv summary file 
+# This csv includes the simu corresponding simu directory as a first column 
+# We could automatically isolate the simulations that resulted in errors somewhere else ("failed_simulations_dir")
+# Add a new parsing static method that adds a new output to the summary file for all the existing simu folders  
