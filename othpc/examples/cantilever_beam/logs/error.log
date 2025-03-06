@@ -1,38 +1,38 @@
-2025-03-06 14:42:33,083 - distributed.nanny - INFO -         Start Nanny at: 'tcp://10.130.48.55:33683'
-2025-03-06 14:42:33,083 - distributed.nanny - INFO -         Start Nanny at: 'tcp://10.130.48.55:32835'
-2025-03-06 14:42:34,634 - distributed.worker - INFO -       Start worker at:   tcp://10.130.48.55:43097
-2025-03-06 14:42:34,634 - distributed.worker - INFO -       Start worker at:   tcp://10.130.48.55:41847
-2025-03-06 14:42:34,634 - distributed.worker - INFO -          Listening to:   tcp://10.130.48.55:43097
-2025-03-06 14:42:34,634 - distributed.worker - INFO -          Listening to:   tcp://10.130.48.55:41847
-2025-03-06 14:42:34,634 - distributed.worker - INFO -           Worker name:             SLURMCluster-1
-2025-03-06 14:42:34,634 - distributed.worker - INFO -           Worker name:             SLURMCluster-0
-2025-03-06 14:42:34,634 - distributed.worker - INFO -          dashboard at:         10.130.48.55:43557
-2025-03-06 14:42:34,634 - distributed.worker - INFO -          dashboard at:         10.130.48.55:42915
-2025-03-06 14:42:34,634 - distributed.worker - INFO - Waiting to connect to:  tcp://10.130.56.191:34551
-2025-03-06 14:42:34,634 - distributed.worker - INFO - Waiting to connect to:  tcp://10.130.56.191:34551
-2025-03-06 14:42:34,634 - distributed.worker - INFO - -------------------------------------------------
-2025-03-06 14:42:34,634 - distributed.worker - INFO - -------------------------------------------------
-2025-03-06 14:42:34,634 - distributed.worker - INFO -               Threads:                          5
-2025-03-06 14:42:34,634 - distributed.worker - INFO -               Threads:                          5
-2025-03-06 14:42:34,634 - distributed.worker - INFO -                Memory:                 488.28 MiB
-2025-03-06 14:42:34,634 - distributed.worker - INFO -                Memory:                 488.28 MiB
-2025-03-06 14:42:34,634 - distributed.worker - INFO -       Local Directory: /tmp/tmp-g88077/dask-scratch-space/worker-o5dohmaw
-2025-03-06 14:42:34,634 - distributed.worker - INFO -       Local Directory: /tmp/tmp-g88077/dask-scratch-space/worker-_oxjn9ne
-2025-03-06 14:42:34,635 - distributed.worker - INFO - -------------------------------------------------
-2025-03-06 14:42:34,635 - distributed.worker - INFO - -------------------------------------------------
-2025-03-06 14:42:36,465 - distributed.worker - INFO - Starting Worker plugin shuffle
-2025-03-06 14:42:36,465 - distributed.worker - INFO -         Registered to:  tcp://10.130.56.191:34551
-2025-03-06 14:42:36,466 - distributed.worker - INFO - -------------------------------------------------
-2025-03-06 14:42:36,466 - distributed.core - INFO - Starting established connection to tcp://10.130.56.191:34551
-2025-03-06 14:42:36,467 - distributed.worker - INFO - Starting Worker plugin shuffle
-2025-03-06 14:42:36,467 - distributed.worker - INFO -         Registered to:  tcp://10.130.56.191:34551
-2025-03-06 14:42:36,468 - distributed.worker - INFO - -------------------------------------------------
-2025-03-06 14:42:36,468 - distributed.core - INFO - Starting established connection to tcp://10.130.56.191:34551
-slurmstepd: error: *** JOB 51504357 ON crcn0045 CANCELLED AT 2025-03-06T14:42:39 ***
-2025-03-06 14:42:39,435 - distributed.worker - INFO - Stopping worker at tcp://10.130.48.55:41847. Reason: scheduler-close
-2025-03-06 14:42:39,435 - distributed.worker - INFO - Stopping worker at tcp://10.130.48.55:43097. Reason: scheduler-close
-slurmstepd: error: *** JOB 51504358 ON crcn0045 CANCELLED AT 2025-03-06T14:42:39 ***
-2025-03-06 14:42:39,436 - distributed.batched - INFO - Batched Comm Closed <TCP (closed) Worker->Scheduler local=tcp://10.130.48.55:49866 remote=tcp://10.130.56.191:34551>
+2025-03-06 22:43:04,620 - distributed.nanny - INFO -         Start Nanny at: 'tcp://10.130.49.36:43141'
+2025-03-06 22:43:04,621 - distributed.nanny - INFO -         Start Nanny at: 'tcp://10.130.49.36:34245'
+2025-03-06 22:43:06,600 - distributed.worker - INFO -       Start worker at:   tcp://10.130.49.36:35795
+2025-03-06 22:43:06,601 - distributed.worker - INFO -       Start worker at:   tcp://10.130.49.36:39311
+2025-03-06 22:43:06,601 - distributed.worker - INFO -          Listening to:   tcp://10.130.49.36:35795
+2025-03-06 22:43:06,601 - distributed.worker - INFO -           Worker name:             SLURMCluster-1
+2025-03-06 22:43:06,601 - distributed.worker - INFO -          Listening to:   tcp://10.130.49.36:39311
+2025-03-06 22:43:06,601 - distributed.worker - INFO -          dashboard at:         10.130.49.36:35989
+2025-03-06 22:43:06,601 - distributed.worker - INFO -           Worker name:             SLURMCluster-0
+2025-03-06 22:43:06,601 - distributed.worker - INFO - Waiting to connect to:  tcp://10.130.56.192:39603
+2025-03-06 22:43:06,601 - distributed.worker - INFO -          dashboard at:         10.130.49.36:41353
+2025-03-06 22:43:06,601 - distributed.worker - INFO - -------------------------------------------------
+2025-03-06 22:43:06,601 - distributed.worker - INFO - Waiting to connect to:  tcp://10.130.56.192:39603
+2025-03-06 22:43:06,601 - distributed.worker - INFO -               Threads:                          5
+2025-03-06 22:43:06,601 - distributed.worker - INFO - -------------------------------------------------
+2025-03-06 22:43:06,601 - distributed.worker - INFO -                Memory:                 488.28 MiB
+2025-03-06 22:43:06,601 - distributed.worker - INFO -               Threads:                          5
+2025-03-06 22:43:06,601 - distributed.worker - INFO -       Local Directory: /tmp/tmp-g88077/dask-scratch-space/worker-eeektmf1
+2025-03-06 22:43:06,601 - distributed.worker - INFO -                Memory:                 488.28 MiB
+2025-03-06 22:43:06,601 - distributed.worker - INFO - -------------------------------------------------
+2025-03-06 22:43:06,601 - distributed.worker - INFO -       Local Directory: /tmp/tmp-g88077/dask-scratch-space/worker-dq_rw20i
+2025-03-06 22:43:06,601 - distributed.worker - INFO - -------------------------------------------------
+2025-03-06 22:43:08,698 - distributed.worker - INFO - Starting Worker plugin shuffle
+2025-03-06 22:43:08,699 - distributed.worker - INFO -         Registered to:  tcp://10.130.56.192:39603
+2025-03-06 22:43:08,699 - distributed.worker - INFO - -------------------------------------------------
+2025-03-06 22:43:08,699 - distributed.worker - INFO - Starting Worker plugin shuffle
+2025-03-06 22:43:08,700 - distributed.core - INFO - Starting established connection to tcp://10.130.56.192:39603
+2025-03-06 22:43:08,700 - distributed.worker - INFO -         Registered to:  tcp://10.130.56.192:39603
+2025-03-06 22:43:08,700 - distributed.worker - INFO - -------------------------------------------------
+2025-03-06 22:43:08,701 - distributed.core - INFO - Starting established connection to tcp://10.130.56.192:39603
+slurmstepd: error: *** JOB 51519653 ON crcn0266 CANCELLED AT 2025-03-06T22:43:12 ***
+2025-03-06 22:43:12,316 - distributed.worker - INFO - Stopping worker at tcp://10.130.49.36:39311. Reason: scheduler-close
+2025-03-06 22:43:12,316 - distributed.worker - INFO - Stopping worker at tcp://10.130.49.36:35795. Reason: scheduler-close
+slurmstepd: error: *** JOB 51519652 ON crcn0266 CANCELLED AT 2025-03-06T22:43:12 ***
+2025-03-06 22:43:12,317 - distributed.batched - INFO - Batched Comm Closed <TCP (closed) Worker->Scheduler local=tcp://10.130.49.36:35334 remote=tcp://10.130.56.192:39603>
 Traceback (most recent call last):
   File "/scratch/users/g88077/python_forge/envs/uqhpc/lib/python3.12/site-packages/distributed/comm/tcp.py", line 297, in write
     raise StreamClosedError()
@@ -51,8 +51,8 @@ Traceback (most recent call last):
     convert_stream_closed_error(self, e)
   File "/scratch/users/g88077/python_forge/envs/uqhpc/lib/python3.12/site-packages/distributed/comm/tcp.py", line 142, in convert_stream_closed_error
     raise CommClosedError(f"in {obj}: {exc}") from exc
-distributed.comm.core.CommClosedError: in <TCP (closed) Worker->Scheduler local=tcp://10.130.48.55:49866 remote=tcp://10.130.56.191:34551>: Stream is closed
-2025-03-06 14:42:39,437 - distributed.batched - INFO - Batched Comm Closed <TCP (closed) Worker->Scheduler local=tcp://10.130.48.55:49864 remote=tcp://10.130.56.191:34551>
+distributed.comm.core.CommClosedError: in <TCP (closed) Worker->Scheduler local=tcp://10.130.49.36:35334 remote=tcp://10.130.56.192:39603>: Stream is closed
+2025-03-06 22:43:12,317 - distributed.batched - INFO - Batched Comm Closed <TCP (closed) Worker->Scheduler local=tcp://10.130.49.36:35340 remote=tcp://10.130.56.192:39603>
 Traceback (most recent call last):
   File "/scratch/users/g88077/python_forge/envs/uqhpc/lib/python3.12/site-packages/distributed/comm/tcp.py", line 297, in write
     raise StreamClosedError()
@@ -71,10 +71,10 @@ Traceback (most recent call last):
     convert_stream_closed_error(self, e)
   File "/scratch/users/g88077/python_forge/envs/uqhpc/lib/python3.12/site-packages/distributed/comm/tcp.py", line 142, in convert_stream_closed_error
     raise CommClosedError(f"in {obj}: {exc}") from exc
-distributed.comm.core.CommClosedError: in <TCP (closed) Worker->Scheduler local=tcp://10.130.48.55:49864 remote=tcp://10.130.56.191:34551>: Stream is closed
-2025-03-06 14:42:39,440 - distributed.nanny - INFO - Closing Nanny gracefully at 'tcp://10.130.48.55:33683'. Reason: scheduler-close
-2025-03-06 14:42:39,441 - distributed.nanny - INFO - Closing Nanny gracefully at 'tcp://10.130.48.55:32835'. Reason: scheduler-close
-2025-03-06 14:42:39,442 - distributed.core - INFO - Received 'close-stream' from tcp://10.130.56.191:34551; closing.
-2025-03-06 14:42:39,442 - distributed.nanny - INFO - Worker closed
-2025-03-06 14:42:39,443 - distributed.core - INFO - Received 'close-stream' from tcp://10.130.56.191:34551; closing.
-2025-03-06 14:42:39,443 - distributed.nanny - INFO - Worker closed
+distributed.comm.core.CommClosedError: in <TCP (closed) Worker->Scheduler local=tcp://10.130.49.36:35340 remote=tcp://10.130.56.192:39603>: Stream is closed
+2025-03-06 22:43:12,321 - distributed.nanny - INFO - Closing Nanny gracefully at 'tcp://10.130.49.36:43141'. Reason: scheduler-close
+2025-03-06 22:43:12,321 - distributed.nanny - INFO - Closing Nanny gracefully at 'tcp://10.130.49.36:34245'. Reason: scheduler-close
+2025-03-06 22:43:12,323 - distributed.core - INFO - Received 'close-stream' from tcp://10.130.56.192:39603; closing.
+2025-03-06 22:43:12,323 - distributed.core - INFO - Received 'close-stream' from tcp://10.130.56.192:39603; closing.
+2025-03-06 22:43:12,323 - distributed.nanny - INFO - Worker closed
+2025-03-06 22:43:12,323 - distributed.nanny - INFO - Worker closed

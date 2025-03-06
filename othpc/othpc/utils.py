@@ -12,7 +12,7 @@ import shutil
 import os
 
 
-class TempWorkDir(object):
+class TempSimuDir(object):
 
     """
     Implement a context manager that creates a temporary working directory.
@@ -71,49 +71,44 @@ class TempWorkDir(object):
     /home/aguirre/otwrapy
     """
 
-    def __init__(self, res_dir, prefix='simu_', cleanup=False, transfer=None):
+    def __init__(self, res_dir, prefix='simu_', cleanup=False, to_be_copied=None):
         date_tag = datetime.now().strftime("%Y-%m-%d_%H-%M_")
-        self.dirname = mkdtemp(dir=res_dir, prefix=prefix + date_tag)
+        self.simu_dir = mkdtemp(dir=res_dir, prefix=prefix + date_tag)
         self.cleanup = cleanup
-        self.transfer = transfer
+        self.to_be_copied = to_be_copied
 
     def __enter__(self):
-        if self.transfer is not None:
-            for file in self.transfer:
+        if self.to_be_copied is not None:
+            for file in self.to_be_copied:
                 if os.path.isfile(file):
-                    shutil.copy(file, self.dirname)
+                    shutil.copy(file, self.simu_dir)
                 elif os.path.isdir(file):
-                    shutil.copytree(file, os.path.join(self.dirname,
+                    shutil.copytree(file, os.path.join(self.simu_dir,
                                     file.split(os.sep)[-1]))
                 else:
                     raise Exception('In otwrapy.TempWorkDir : the current '
                                     + 'path "{}" is not a file '.format(file)
                                     + 'nor a directory to transfer.')
-        return self.dirname
+        return self.simu_dir
 
     def __exit__(self, type, value, traceback):
         if self.cleanup:
-            shutil.rmtree(self.dirname)
+            shutil.rmtree(self.simu_dir)
 
+    def make_summary_file(self, x, y=None, summary_file="summary.csv"):
+        input_description = [f'X{i}' for i in range(x.getDimension())]
+        df = pd.DataFrame([], columns=input_description, index=[self.simu_dir])
+        df.loc[self.simu_dir, input_description] = x
+        if y is not None: 
+            output_description = [f'Y{i}' for i in range(len(y))]
+            df.loc[self.simu_dir, output_description] = y
+        df.to_csv(os.path.join(self.simu_dir, summary_file))
 
+def make_summary_table(res_dir, summary_table="summary_table.csv", summary_row="summary.csv"):
+    df_table = pd.DataFrame([])
+    for simu_dir in os.listdir(res_dir):
+        df = pd.read_csv(os.path.join(res_dir, simu_dir, summary_row), index_col=0)
+        df_table = pd.concat([df_table, df])
+    df_table.to_csv(os.path.join(res_dir, summary_table))
+        
 
-def make_summary_file(simulation_directory, x, y=None):
-    input_description = x.getDescription()
-    output_description = ['Y{i}' for i in range(len(y))]
-    df = pd.DataFrame([], columns=input_description + output_description, index=[simulation_directory])
-    df.loc[input_description, simulation_directory] = x 
-    df.loc[output_description, simulation_directory] = y
-    df.to_csv(os.path.join(simulation_directory, "summary.csv"))
-
-
-
-# TODO: 
-# For each execution of the wrapper, dynamically write the results in a csv summary file 
-# This csv includes the simu corresponding simu directory as a first column 
-
-# >> Solution : write an output file in each simu directory and have a method to gather them at the end 
-
-# Identify the failed executions 
-
-
-# Add a new parsing static method that adds a new output to the summary file for all the existing simu folders

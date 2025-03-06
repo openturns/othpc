@@ -94,7 +94,8 @@ class CantileverBeam(ot.OpenTURNSPythonFunction):
         x : list
             Input point to be evaluated, in this example, inputs are (F, E, L, I).
         """
-        with othpc.TempWorkDir(res_dir=self.results_directory) as simu_dir:
+        temp_simu_dir_maker = othpc.TempSimuDir(res_dir=self.results_directory)
+        with temp_simu_dir_maker as simu_dir:
             # Create input files
             self._create_input_files(x, simu_dir)
             # Execution
@@ -105,7 +106,16 @@ class CantileverBeam(ot.OpenTURNSPythonFunction):
                 return [float("nan")]
             # Parse outputs
             y = self._parse_output(simu_dir)
-            # Make a summary file including the input and corresponding output
-            othpc.make_summary_file(simu_dir, x, y)
+            # Write input-output summary csv file
+            temp_simu_dir_maker.make_summary_file(x, [y], "summary.csv")
         return [y]
 
+# TODO 
+# ----
+# Modify the beam example to include requirement file that should be copied in each simu_dir
+# Work on cache management 
+# Improve description management in summary files and table
+
+# QUESTIONS 
+# ---------
+# What are the arguments in the exit from TempSimuDir?
