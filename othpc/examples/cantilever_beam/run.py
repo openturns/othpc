@@ -18,7 +18,8 @@ try:
 except FileExistsError:
     pass
 cb = CantileverBeam(input_template_file, executable_file, my_results_directory)
-X = ot.Sample.ImportFromCSVFile("input_doe/doe.csv", ",")
+# X = ot.Sample.ImportFromCSVFile("input_doe/doe.csv", ",")
+X = ot.Sample.ImportFromCSVFile("input_doe/doe_with_failure.csv", ",")
 Y = cb(X)
 print(Y)
-othpc.make_summary_table(my_results_directory, summary_table="summary_table.csv")
+othpc.make_summary_file(my_results_directory)

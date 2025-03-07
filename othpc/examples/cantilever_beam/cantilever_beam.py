@@ -9,6 +9,7 @@ import os
 import openturns as ot
 import openturns.coupling_tools as otct
 import othpc
+from subprocess import CalledProcessError
 
 from xml.dom import minidom
 
@@ -94,20 +95,20 @@ class CantileverBeam(ot.OpenTURNSPythonFunction):
         x : list
             Input point to be evaluated, in this example, inputs are (F, E, L, I).
         """
-        temp_simu_dir_maker = othpc.TempSimuDir(res_dir=self.results_directory)
-        with temp_simu_dir_maker as simu_dir:
+        with othpc.TempSimuDir(res_dir=self.results_directory, to_be_copied=["template/LICENCE.xml"]) as simu_dir:
             # Create input files
             self._create_input_files(x, simu_dir)
             # Execution
             try: 
-                otct.execute(f"{self.executable_file} -x beam_input.xml", cwd=simu_dir)
-            except RuntimeError:
-                # TODO: implement a logging option 
-                return [float("nan")]
-            # Parse outputs
-            y = self._parse_output(simu_dir)
+                otct.execute(f"{self.executable_file} -x beam_input.xml", cwd=simu_dir, capture_output=True)
+                # Parse outputs
+                y = self._parse_output(simu_dir)
+            except CalledProcessError as error:
+                # TODO: implement a logging option
+                othpc.evaluation_error_log(error, simu_dir, "CantileverBeam_RuntimeError.txt")
+                y = float("nan")
             # Write input-output summary csv file
-            temp_simu_dir_maker.make_summary_file(x, [y], "summary.csv")
+            othpc.make_report_file(simu_dir, x, [y])
         return [y]
 
 # TODO 

@@ -10,6 +10,7 @@ from tempfile import mkdtemp
 import pandas as pd
 import shutil
 import os
+import openturns as ot
 
 
 class TempSimuDir(object):
@@ -86,7 +87,7 @@ class TempSimuDir(object):
                     shutil.copytree(file, os.path.join(self.simu_dir,
                                     file.split(os.sep)[-1]))
                 else:
-                    raise Exception('In otwrapy.TempWorkDir : the current '
+                    raise Exception('In othpc.TempSimuDir : the current '
                                     + 'path "{}" is not a file '.format(file)
                                     + 'nor a directory to transfer.')
         return self.simu_dir
@@ -95,23 +96,114 @@ class TempSimuDir(object):
         if self.cleanup:
             shutil.rmtree(self.simu_dir)
 
-    def make_summary_file(self, x, y=None, summary_file="summary.csv"):
-        input_description = [f'X{i}' for i in range(x.getDimension())]
-        df = pd.DataFrame([], columns=input_description, index=[self.simu_dir])
-        df.loc[self.simu_dir, input_description] = x
-        if y is not None: 
+def make_report_file(simu_dir, x, y=None, report_file="report.csv", input_description=None, output_description=None):
+    if input_description is None:
+        input_description = [f'X{i}' for i in range(len(x))]
+    else:
+        input_description = list(input_description)
+    if y is None:
+        df = pd.DataFrame([], columns=input_description, index=[simu_dir])
+    else:
+        if output_description is None:
             output_description = [f'Y{i}' for i in range(len(y))]
-            df.loc[self.simu_dir, output_description] = y
-        df.to_csv(os.path.join(self.simu_dir, summary_file))
+        else:
+            output_description = list(output_description)
+        df = pd.DataFrame([], columns=input_description + output_description, index=[simu_dir])
+    df.loc[simu_dir, input_description] = x
+    if y is not None:
+        df.loc[simu_dir, output_description] = y
+    df.to_csv(os.path.join(simu_dir, report_file), na_rep="NaN")
 
-def make_summary_table(res_dir, summary_table="summary_table.csv", summary_row="summary.csv"):
+def make_summary_file(res_dir, summary_file="summary.csv", report_file="report.csv"):
     df_table = pd.DataFrame([])
-    for simu_dir in os.listdir(res_dir):
+    subfolders = [ f.path for f in os.scandir(res_dir) if f.is_dir() ]
+    for simu_dir in subfolders:
         try:
-            df = pd.read_csv(os.path.join(res_dir, simu_dir, summary_row), index_col=0)
+            df = pd.read_csv(os.path.join(simu_dir, report_file), index_col=0, na_values=["NaN", ""])
             df_table = pd.concat([df_table, df])
         except FileNotFoundError: 
             pass
-    df_table.to_csv(os.path.join(res_dir, summary_table))
+    df_table.to_csv(os.path.join(res_dir, summary_file), na_rep="NaN")
         
 
+def evaluation_error_log(error, simulation_directory, name="evaluation_error.txt"):
+    f  = open(os.path.join(simulation_directory, name), "w")
+    f.write(error.__str__())
+    f.close()
+
+class MemoizeWithSave(ot.MemoizeFunction):
+    """
+    It provides additionnal methods to save and load cache input and output to the OT Function
+ 
+    Class that inherits from openturns.MemoizeFunction
+ 
+    Parameters
+    ----------
+    function : :class:`~openturns.Function`
+        The function in which the cache is loaded or saved.
+    cache_filename : str
+        Path to the cache filename, it must be a csv file.
+    logger_name : str
+        Name of the logger to use, default is None which is the root logger.
+    """
+    def __init__(self, function, cache_filename, logger_name=None):
+        self.cache_filename = cache_filename
+        self.logger = logging.getLogger(logger_name)
+        # transfer parameters of the original wrapper function
+        self.__dict__.update(function.__dict__)
+ 
+        super().__init__(function)
+ 
+    def save_cache(self, logging=True):
+        """
+        Save the input and output cache to a csv file.
+        """
+ 
+        # get the cache sample
+        cache_data = self.getCacheInput()
+        cache_data.stack(self.getCacheOutput())
+        cache_data.setDescription(self.getDescription())
+        cache_data.exportToCSVFile(self.cache_filename)
+ 
+        # internal flag to avoid repeated log message in FunctionAdvanced
+        if logging:
+            # print the number of saved evaluations
+            self.logger.info(f'Saved successfully {cache_data.getSize()} evaluations in '
+                             f'"{self.cache_filename}".')
+ 
+    def load_cache(self):
+        """
+        Load a csv file and add it to the cache of the function
+        """
+ 
+        # retreive the number of input
+        n_input = self.getInputDimension()
+ 
+        if os.path.isfile(self.cache_filename):
+            # load the cache from the file
+            cache_data = ot.Sample.ImportFromCSVFile(self.cache_filename)
+ 
+            # add the cache to the function
+            input_sample = cache_data[:, :n_input]
+            output_sample = cache_data[:, n_input:]
+            self.addCacheContent(input_sample, output_sample)
+ 
+            # print the number of loaded evaluations
+            self.logger.info(f'Loaded successfully {cache_data.getSize()} evaluations from '
+                             f'{self.cache_filename}.')
+        else:
+            self.logger.info(f'Cache filename "{self.cache_filename}" not found. '
+                             'No evaluations loaded !')
+
+# def explicit_error(cp):
+#   if cp.returncode != 0:
+#     print(''.join(['=']*20) + ' cmd ' + ''.join(['=']*20))
+#     print(cmd)
+#     print(''.join(['=']*20) + ' exit code ' + ''.join(['=']*20))
+#     print(cp.returncode)
+#     print(''.join(['=']*20) + ' stdout ' + ''.join(['=']*20))
+#     print(cp.stdout.decode(platform_arg['encoding'][os.name]))
+#     print(''.join(['=']*20) + ' stderr ' + ''.join(['=']*20))
+#     print(cp.stderr.decode(platform_arg['encoding'][os.name]))
+#     print(''.join(['=']*20) + '  ' + ''.join(['=']*20))
+#     raise RuntimeError(cp.stderr.decode(platform_arg['encoding'][os.name]))
