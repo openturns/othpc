@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Copyright (C) EDF 2024
+Copyright (C) EDF 2025
 
-@authors: Elias Fekhari
+@authors: Elias Fekhari, Joseph Muré
 """
 
 import os
@@ -17,7 +17,7 @@ from dask_jobqueue import SLURMCluster
 from dask.distributed import Client, print, progress, wait
 
 
-class DaskWrapper(ot.OpenTURNSPythonFunction):
+class DaskFunction(ot.OpenTURNSPythonFunction):
     """
     The aim of this class is to plug an black box model to an OpenTURNS.PythonFunction object in a HPC environment. 
     This class gives an example of a HPC wrapper for an executable black box model using the Python package Dask (see https://docs.dask.org/en/stable/). 
@@ -25,7 +25,7 @@ class DaskWrapper(ot.OpenTURNSPythonFunction):
     Parameters
     ----------
     callable : openturns.Function
-            The unit function to parallelize on the clusteer
+            The unit function to parallelize on the cluster
     verbose : bool 
             Controls the verbosity, True by default
 
@@ -34,7 +34,7 @@ class DaskWrapper(ot.OpenTURNSPythonFunction):
     >>> input_file_path = "input_doe/doe.csv"
     >>> df_doe = pd.read_csv(input_file_path, index_col=0).reset_index()
     >>> X = ot.Sample.BuildFromDataFrame(df_doe)
-    >>> my_wrapper = DaskWrapper(input_dimension=df_doe.shape[1], output_dimension=1, index_col=0)
+    >>> my_wrapper = DaskFunction(input_dimension=df_doe.shape[1], output_dimension=1, index_col=0)
     >>> g = my_wrapper.get_function()
     >>> Y = g(X)
     """

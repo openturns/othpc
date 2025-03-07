@@ -1,8 +1,8 @@
 # coding: utf8
 """
-Setup script for otwrap
+Setup script for othpc
 ============================
-This script allows to install otwrap within the Python environment.
+This script allows to install othpc within the Python environment.
 Usage
 -----
 ::
@@ -14,7 +14,7 @@ import os
 from setuptools import setup, find_packages
 
 # Get the version from __init__.py
-path = os.path.join(os.path.dirname(__file__), 'otwrap', '__init__.py')
+path = os.path.join(os.path.dirname(__file__), 'othpc', '__init__.py')
 with open(path) as f:
     version_file = f.read()
 
@@ -30,18 +30,18 @@ with open("README.md", "r") as fh:
     long_description = fh.read()
 
 setup(
-    name='otwrap',
+    name='othpc',
     version=version,
     license='LGPLv3+',
-    author="Elias Fekhari",
+    author="Elias Fekhari, Joseph Muré, Michaël Baudin",
     author_email='elias.fekhari@edf.fr',
-    packages=['otwrap'],
+    packages=['othpc'],
     keywords=['OpenTURNS', 'HPC'],
     description="Simplifies the evaluation of numerical simulation models on high performance computing facilities",
     long_description=long_description,
     long_description_content_type="text/markdown",
     install_requires=[
-          "openturns>=1.20", 
+          "openturns>=1.22", 
       ],
     include_package_data=True,
     classifiers=[
