@@ -107,8 +107,11 @@ class TempSimuDir(object):
 def make_summary_table(res_dir, summary_table="summary_table.csv", summary_row="summary.csv"):
     df_table = pd.DataFrame([])
     for simu_dir in os.listdir(res_dir):
-        df = pd.read_csv(os.path.join(res_dir, simu_dir, summary_row), index_col=0)
-        df_table = pd.concat([df_table, df])
+        try:
+            df = pd.read_csv(os.path.join(res_dir, simu_dir, summary_row), index_col=0)
+            df_table = pd.concat([df_table, df])
+        except FileNotFoundError: 
+            pass
     df_table.to_csv(os.path.join(res_dir, summary_table))
         
 

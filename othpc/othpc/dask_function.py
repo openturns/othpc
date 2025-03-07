@@ -33,11 +33,10 @@ class DaskFunction(ot.OpenTURNSPythonFunction):
     >>> g = my_wrapper.get_function()
     >>> Y = g(X)
     """
-    def __init__(self, callable, csv_dump_file=None):
+    def __init__(self, callable):
         # Inherit methods and attributes from the base class "OpenTURNSWrapper"
         super().__init__(callable.getInputDimension(), callable.getOutputDimension())
         self._callable = callable
-        self.csv_dump_file = csv_dump_file
     
         # SLURM options 
         self.slurm_resources = {
@@ -80,12 +79,7 @@ class DaskFunction(ot.OpenTURNSPythonFunction):
         # Distribute the evaluations
         futures = client.map(self._callable, X)
         progress(futures)
-        outputs = client.gather(futures) # liste de Points
-
-        if self.csv_dump_file is not None: 
-            X.stack(outputs)
-            X.exportToCSVFile(self.csv_dump_file, ',')
-
+        outputs = client.gather(futures)
+        # On remarque que le shutdown doit etre enlevé lorsque la Function est utilisée par un algo OT
         client.shutdown()
-
         return outputs 

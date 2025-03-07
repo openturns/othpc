@@ -113,8 +113,9 @@ class CantileverBeam(ot.OpenTURNSPythonFunction):
 # TODO 
 # ----
 # Modify the beam example to include requirement file that should be copied in each simu_dir
-# Work on cache management 
+# Work on cache management. Case when I have existing simulations >> the summary_table should be loaded in a MemoizeFunction.  
 # Improve description management in summary files and table
+# 
 
 # QUESTIONS 
 # ---------
