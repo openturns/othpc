@@ -3,10 +3,9 @@
 """
 Copyright (C) EDF 2025
 
-@authors: Elias Fekhari, Joseph Muré
+@authors: Elias Fekhari, Joseph Muré, Michaël Baudin
 """
 
-import pickle
 import openturns as ot
 from dask_jobqueue import SLURMCluster
 from dask.distributed import Client, print, progress
@@ -14,45 +13,81 @@ from dask.distributed import Client, print, progress
 
 class DaskFunction(ot.OpenTURNSPythonFunction):
     """
-    The aim of this class is to plug an black box model to an OpenTURNS.PythonFunction object in a HPC environment. 
-    This class gives an example of a HPC wrapper for an executable black box model using the Python package Dask (see https://docs.dask.org/en/stable/). 
+    The aim of this class is to plug a numerical simulation model to an OpenTURNS.PythonFunction object in a HPC environment. 
+    This class gives an example of a HPC wrapper for an executable numerical model using the Python package Dask (see https://docs.dask.org/en/stable/). 
     
     Parameters
     ----------
     callable : openturns.Function
-            The unit function to parallelize on the cluster
-    csv_dump_file : str 
-            If not None, it writes an input-ouput csv file at the absolute path given. 
+        The unit function to parallelize on the cluster
+    job_number : integer
+        Defines the number of jobs submitted. 
+    nodes_per_job : integer
+        Defines the number of nodes requested per job.
+    cpus_per_job : integer
+        Defines the number of cpus requested per job.
+    timeout_per_job : integer
+        Defines the timeout requested (in minutes) per job.
+    memory_per_job : integer
+        Defines the memory (in MB) requested per job.
+    slurm_wckey : string
+        Only for EDF clusters. Defines the identifaction key of a project. To check the current wckeys, use the bash command "cce_wckeys".   
+    slurm_extra_options : list 
+        Gives access to all the other arguments that can be parsed by the SLURM sbatch API. 
 
     Examples
     --------
-    >>> input_file_path = "input_doe/doe.csv"
-    >>> df_doe = pd.read_csv(input_file_path, index_col=0).reset_index()
-    >>> X = ot.Sample.BuildFromDataFrame(df_doe)
-    >>> my_wrapper = DaskFunction(input_dimension=df_doe.shape[1], output_dimension=1, index_col=0)
-    >>> g = my_wrapper.get_function()
-    >>> Y = g(X)
+    >>> import othpc
+    >>> import openturns as ot
+    >>> from cantilever_beam import CantileverBeam
+    
+    >>> cb = CantileverBeam("template/beam_input_template.xml", "template/beam", "my_results")
+    >>> dask_wrapper = othpc.DaskFunction(cb)
+    >>> X = ot.Sample.ImportFromCSVFile("input_doe/doe.csv", ",")
+    >>> Y = dask_wrapper(X)
     """
-    def __init__(self, callable):
-        # Inherit methods and attributes from the base class "OpenTURNSWrapper"
+    def __init__(
+        self, 
+        callable, 
+        job_number=1,
+        nodes_per_job=1, 
+        cpus_per_job=4,
+        timeout_per_job=5, 
+        memory_per_job=512, 
+        slurm_wckey="P120K:SALOME",
+        slurm_extra_options=["--output=logs/output.log", "--error=logs/error.log"],
+        verbose=False
+        ):
         super().__init__(callable.getInputDimension(), callable.getOutputDimension())
         self._callable = callable
-    
-        # SLURM options 
-        self.slurm_resources = {
-        "nodes-per-job": 1,
-        "cpus-per-job": 5,
-        "mem-per-job": 512, # 512 MB
-        "timeout": "00:01:00", # 1 minutes
-        "nb-jobs": 2
-        }
-        self.dask_options = ["--wckey=P120K:SALOME",  f"--time={self.slurm_resources["timeout"]}", "--output=logs/output.log", "--error=logs/error.log"]
-
-        # Define Dask object SLURMCluster
-        self.cluster = SLURMCluster(cores=self.slurm_resources["cpus-per-job"],
-                                    memory=f"{self.slurm_resources["mem-per-job"]} MB",
-                                    job_extra_directives=self.dask_options)
-
+        self.setInputDescription(callable.getInputDescription())
+        self.setOutputDescription(callable.getOutputDescription())
+        if slurm_wckey is not None: 
+            self.dask_options = [f"--wckey={slurm_wckey}"] + slurm_extra_options
+        else: 
+            self.dask_options = slurm_extra_options
+        self.job_number = job_number
+        self.nodes_per_job = nodes_per_job
+        self.cpus_per_job = cpus_per_job
+        self.timeout_per_job = timeout_per_job
+        self.memory_per_job = memory_per_job
+        self.slurm_extra_options = slurm_extra_options
+        self.cluster = SLURMCluster(cores=self.cpus_per_job,
+                                    memory=f"{self.memory_per_job} MB",
+                                    walltime=self.timeout_per_job,
+                                    name="dask_worker",
+                                    job_extra_directives=self.dask_options,
+                                    interface='ib0',
+                                    )
+        if verbose:
+            print(
+                "** Requested ressources **\n"
+                f"+job_number = {self.job_number}\n"
+                f"+nodes_per_job = {self.nodes_per_job}\n"
+                f"+cpus_per_job = {self.cpus_per_job}\n"
+                f"+timeout_per_job = {self.timeout_per_job}\n"
+                f"+memory_per_job = {self.memory_per_job}\n"
+            )
     def _exec_sample(self, X):
         """
         Launches the parallel evaluations black-box model evaluated at the input design of experiments X. 
@@ -67,15 +102,12 @@ class DaskFunction(ot.OpenTURNSPythonFunction):
             This object contains the output results. 
         """
         X = ot.Sample(X)
-
         # Submit jobs to SLURM
-        self.cluster.scale(self.slurm_resources["nb-jobs"])
+        self.cluster.scale(self.job_number)
         print(f'> The dashboard link from the cluster : {self.cluster.dashboard_link}')
-
         # Create a Client for the SLURMCluster object
         client = Client(self.cluster)
         print(f'> The dashboard link from the client  : {client.dashboard_link}')
-
         # Distribute the evaluations
         futures = client.map(self._callable, X)
         progress(futures)

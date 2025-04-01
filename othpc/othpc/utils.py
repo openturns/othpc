@@ -125,7 +125,6 @@ def make_summary_file(res_dir, summary_file="summary.csv", report_file="report.c
             pass
     df_table.to_csv(os.path.join(res_dir, summary_file), na_rep="NaN")
         
-
 def evaluation_error_log(error, simulation_directory, name="evaluation_error.txt"):
     f  = open(os.path.join(simulation_directory, name), "w")
     f.write(error.__str__())
