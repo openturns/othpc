@@ -1,7 +1,7 @@
 .obsidian/*
 
 *log*
-*.log*
+*.log
 *my_results*
 *workdir*
 *DRAFT*
