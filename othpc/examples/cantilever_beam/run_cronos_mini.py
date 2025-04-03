@@ -19,4 +19,4 @@ othpc.make_summary_file("my_results", summary_file="summary_table.csv")
 
 # TODO:
 # Test within an algorithm
-# Test with a MemoizeFunction
+# Test multi-core and multi-nodes applications

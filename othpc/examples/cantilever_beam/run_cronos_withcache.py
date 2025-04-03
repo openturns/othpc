@@ -7,6 +7,7 @@ Copyright (C) EDF 2025
 """
 import os
 import othpc
+import pandas as pd
 import openturns as ot
 from cantilever_beam import CantileverBeam
 
@@ -20,16 +21,9 @@ except FileExistsError:
 cb = CantileverBeam(input_template_file, executable_file, my_results_directory)
 dw = othpc.DaskFunction(cb)
 dwfun = ot.Function(dw)
-memoize_dwfun = ot.MemoizeFunction(dwfun)
-# load the cache from the summary file
-summary_data = ot.Sample.ImportFromCSVFile(
-    os.path.join(my_results_directory, "summary_table.csv")
+memoize_dwfun = othpc.load_cache(
+    dwfun, os.path.join(my_results_directory, "summary_table.csv")
 )
-# add the cache to the function
-input_cache = summary_data[:, : dwfun.getInputDimension()]
-output_cache = summary_data[:, dwfun.getInputDimension() :]
-memoize_dwfun.addCacheContent(input_cache, output_cache)
-#
 X = ot.Sample.ImportFromCSVFile("input_doe/doe.csv", ",")
 Y = memoize_dwfun(X)
 print(Y)

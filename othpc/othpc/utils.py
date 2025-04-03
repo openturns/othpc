@@ -132,81 +132,107 @@ def make_summary_file(res_dir, summary_file="summary.csv", report_file="report.c
     df_table.to_csv(os.path.join(res_dir, summary_file), na_rep="NaN")
 
 
+def load_cache(function, summary_file):
+    """
+    Makes an ot.MemoizeFunction including in its cache the previous evaluations written in the summary_file
+
+    Parameters
+    ----------
+    function : ot.Function
+        Function that will be turned into a ot.MemoizeFunction
+    summary_file : string
+        Path to the summary file created by the make_summary_file method.
+    """
+    memoize_function = ot.MemoizeFunction(function)
+    # load the cache from the summary file
+    df = pd.read_csv(summary_file)
+    df = df.drop(columns=df.columns[0])
+    input_cache = ot.Sample.BuildFromDataFrame(
+        df.iloc[:, : function.getInputDimension()]
+    )
+    output_cache = ot.Sample.BuildFromDataFrame(
+        df.iloc[:, function.getInputDimension() :]
+    )
+    # add the cache to the function
+    memoize_function.addCacheContent(input_cache, output_cache)
+    return memoize_function
+
+
 def evaluation_error_log(error, simulation_directory, name="evaluation_error.txt"):
     f = open(os.path.join(simulation_directory, name), "w")
     f.write(error.__str__())
     f.close()
 
 
-class MemoizeWithSave(ot.MemoizeFunction):
-    """
-    It provides additionnal methods to save and load cache input and output to the OT Function
+# class MemoizeWithSave(ot.MemoizeFunction):
+#     """
+#     It provides additionnal methods to save and load cache input and output to the OT Function
 
-    Class that inherits from openturns.MemoizeFunction
+#     Class that inherits from openturns.MemoizeFunction
 
-    Parameters
-    ----------
-    function : :class:`~openturns.Function`
-        The function in which the cache is loaded or saved.
-    cache_filename : str
-        Path to the cache filename, it must be a csv file.
-    logger_name : str
-        Name of the logger to use, default is None which is the root logger.
-    """
+#     Parameters
+#     ----------
+#     function : :class:`~openturns.Function`
+#         The function in which the cache is loaded or saved.
+#     cache_filename : str
+#         Path to the cache filename, it must be a csv file.
+#     logger_name : str
+#         Name of the logger to use, default is None which is the root logger.
+#     """
 
-    def __init__(self, function, cache_filename, logger_name=None):
-        self.cache_filename = cache_filename
-        self.logger = logging.getLogger(logger_name)
-        # transfer parameters of the original wrapper function
-        self.__dict__.update(function.__dict__)
+#     def __init__(self, function, cache_filename, logger_name=None):
+#         self.cache_filename = cache_filename
+#         self.logger = logging.getLogger(logger_name)
+#         # transfer parameters of the original wrapper function
+#         self.__dict__.update(function.__dict__)
 
-        super().__init__(function)
+#         super().__init__(function)
 
-    def save_cache(self, logging=True):
-        """
-        Save the input and output cache to a csv file.
-        """
+#     def save_cache(self, logging=True):
+#         """
+#         Save the input and output cache to a csv file.
+#         """
 
-        # get the cache sample
-        cache_data = self.getCacheInput()
-        cache_data.stack(self.getCacheOutput())
-        cache_data.setDescription(self.getDescription())
-        cache_data.exportToCSVFile(self.cache_filename)
+#         # get the cache sample
+#         cache_data = self.getCacheInput()
+#         cache_data.stack(self.getCacheOutput())
+#         cache_data.setDescription(self.getDescription())
+#         cache_data.exportToCSVFile(self.cache_filename)
 
-        # internal flag to avoid repeated log message in FunctionAdvanced
-        if logging:
-            # print the number of saved evaluations
-            self.logger.info(
-                f"Saved successfully {cache_data.getSize()} evaluations in "
-                f'"{self.cache_filename}".'
-            )
+#         # internal flag to avoid repeated log message in FunctionAdvanced
+#         if logging:
+#             # print the number of saved evaluations
+#             self.logger.info(
+#                 f"Saved successfully {cache_data.getSize()} evaluations in "
+#                 f'"{self.cache_filename}".'
+#             )
 
-    def load_cache(self):
-        """
-        Load a csv file and add it to the cache of the function
-        """
+#     def load_cache(self):
+#         """
+#         Load a csv file and add it to the cache of the function
+#         """
 
-        # retreive the number of input
-        n_input = self.getInputDimension()
+#         # retreive the number of input
+#         n_input = self.getInputDimension()
 
-        if os.path.isfile(self.cache_filename):
-            # load the cache from the file
-            cache_data = ot.Sample.ImportFromCSVFile(self.cache_filename)
-            # add the cache to the function
-            input_sample = cache_data[:, :n_input]
-            output_sample = cache_data[:, n_input:]
-            self.addCacheContent(input_sample, output_sample)
+#         if os.path.isfile(self.cache_filename):
+#             # load the cache from the file
+#             cache_data = ot.Sample.ImportFromCSVFile(self.cache_filename)
+#             # add the cache to the function
+#             input_sample = cache_data[:, :n_input]
+#             output_sample = cache_data[:, n_input:]
+#             self.addCacheContent(input_sample, output_sample)
 
-            # print the number of loaded evaluations
-            self.logger.info(
-                f"Loaded successfully {cache_data.getSize()} evaluations from "
-                f"{self.cache_filename}."
-            )
-        else:
-            self.logger.info(
-                f'Cache filename "{self.cache_filename}" not found. '
-                "No evaluations loaded !"
-            )
+#             # print the number of loaded evaluations
+#             self.logger.info(
+#                 f"Loaded successfully {cache_data.getSize()} evaluations from "
+#                 f"{self.cache_filename}."
+#             )
+#         else:
+#             self.logger.info(
+#                 f'Cache filename "{self.cache_filename}" not found. '
+#                 "No evaluations loaded !"
+#             )
 
 
 # def explicit_error(cp):
