@@ -4,7 +4,7 @@
 #SBATCH --partition=cn
 #SBATCH --qos=test
 #SBATCH --time=00:30:00
-#SBATCH --wckey=P120F:PYTHON
+#SBATCH --wckey=P120K:SALOME
 #SBATCH --output=job_%j.out.log
 #SBATCH --error=job_%j.err.log
 
@@ -16,8 +16,8 @@ from multiprocessing import Process, Pool
 import multiprocessing
 import pandas as pd
 from optparse import OptionParser
-import imp
 
+from otPythonModel import funcPythonCode
 sys.path.insert(0, "../../lib_py")
 import myLib.toolBox as tb
 
@@ -178,8 +178,8 @@ if __name__ == "__main__":
     options, args = process_cmd_line(sys.argv[1:])
 
     # load module and environement of given _exec module
-    module_def_exec = imp.load_source("m_def_exec", args[1])
-    funcExec = module_def_exec.funcPythonCode()
+    # module_def_exec = imp.load_source("m_def_exec", args[1])
+    funcExec = funcPythonCode()
 
     # launch main loop
     main(args, options, funcExec)

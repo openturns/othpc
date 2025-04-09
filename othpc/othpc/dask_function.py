@@ -5,7 +5,6 @@ Copyright (C) EDF 2025
 
 @authors: Elias Fekhari, Joseph Muré, Michaël Baudin
 """
-# import asyncio
 import openturns as ot
 from dask_jobqueue import SLURMCluster
 from dask.distributed import Client, print, progress
@@ -84,11 +83,12 @@ class DaskFunction(ot.OpenTURNSPythonFunction):
         if verbose:
             print(
                 "** Requested ressources **\n"
-                f"+job_number = {self.job_number}\n"
-                f"+nodes_per_job = {self.nodes_per_job}\n"
-                f"+cpus_per_job = {self.cpus_per_job}\n"
-                f"+timeout_per_job = {self.timeout_per_job}\n"
-                f"+memory_per_job = {self.memory_per_job}\n"
+                "**************************"
+                f"+ job_number--------{self.job_number}\n"
+                f"+ nodes_per_job-----{self.nodes_per_job}\n"
+                f"+ cpus_per_job------{self.cpus_per_job}\n"
+                f"+ timeout_per_job---{self.timeout_per_job} minutes\n"
+                f"+ memory_per_job----{self.memory_per_job} MB\n"
             )
 
     def _exec_sample(self, X):
@@ -113,17 +113,21 @@ class DaskFunction(ot.OpenTURNSPythonFunction):
         # Create a Client for the SLURMCluster object
         client = Client(self.cluster)
 
-        # WE NOTICE THAT THE 'PENDING' STATE IS MUCH LONGER, WHY?
+        # OPTION 1
+        # futures = client.map(self._callable, X)
+        # outputs = client.gather(futures)
+
+        # OPTION 2
+        # WE NOTICE THAT THE 'PENDING' STATE IS LONGER BUT THIS ALLOWS US TO USE OpenTURNS ALGORITHMS
         async def f():
             futures = client.map(self._callable, X)
             outputs = await client.gather(futures, asynchronous=True)
             return outputs
-
         outputs = client.sync(f)
         client.close()
 
-        # ALTERNATIVE EXAMPLE FROM: https://distributed.dask.org/en/stable/asynchronous.html
-
+        # OPTION 3 (to be tested)
+        # From Dask documentation: https://distributed.dask.org/en/stable/asynchronous.html
         # async def f():
         #     client = await Client(self.cluster, asynchronous=True)
         #     print(client)
@@ -132,7 +136,6 @@ class DaskFunction(ot.OpenTURNSPythonFunction):
         #     outputs = await client.gather(futures, asynchronous=True)
         #     await client.close()
         #     return outputs
-
         # # Use asyncio
         # outputs = asyncio.get_event_loop().run_until_complete(f())
 

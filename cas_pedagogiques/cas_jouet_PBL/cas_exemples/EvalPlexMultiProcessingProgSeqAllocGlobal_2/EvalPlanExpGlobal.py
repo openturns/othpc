@@ -20,7 +20,7 @@ import imp
 
 sys.path.insert(0, "../../lib_py")
 import myLib.toolBox as tb
-
+from importlib.machinery import SourceFileLoader
 
 def process_cmd_line(argv):
     """Processes the passed command line arguments."""
@@ -179,6 +179,7 @@ if __name__ == "__main__":
 
     # load module and environement of given _exec module
     module_def_exec = imp.load_source("m_def_exec", args[1])
+    # module_def_exec = SourceFileLoader("my_script", script_path).load_module()
     funcExec = module_def_exec.funcPythonCode()
 
     # launch main loop
