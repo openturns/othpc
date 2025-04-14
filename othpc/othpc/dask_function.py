@@ -21,8 +21,6 @@ class DaskFunction(ot.OpenTURNSPythonFunction):
         The unit function to parallelize on the cluster
     job_number : integer
         Defines the number of jobs submitted.
-    nodes_per_job : integer
-        Defines the number of nodes requested per job.
     cpus_per_job : integer
         Defines the number of cpus requested per job.
     timeout_per_job : integer
@@ -50,7 +48,6 @@ class DaskFunction(ot.OpenTURNSPythonFunction):
         self,
         callable,
         job_number=1,
-        nodes_per_job=1,
         cpus_per_job=4,
         timeout_per_job=5,
         memory_per_job=512,
@@ -63,12 +60,11 @@ class DaskFunction(ot.OpenTURNSPythonFunction):
         self.setInputDescription(callable.getInputDescription())
         self.setOutputDescription(callable.getOutputDescription())
         self.job_number = job_number
-        self.nodes_per_job = nodes_per_job
         self.cpus_per_job = cpus_per_job
         self.timeout_per_job = timeout_per_job
         self.memory_per_job = memory_per_job
         self.slurm_extra_options = slurm_extra_options
-        self.dask_options = [f"--wckey={slurm_wckey}"] + slurm_extra_options + [f"--nodes={nodes_per_job}"]
+        self.dask_options = [f"--wckey={slurm_wckey}"] + slurm_extra_options 
         self.cluster = SLURMCluster(
             cores=self.cpus_per_job,
             memory=f"{self.memory_per_job} MB",
@@ -76,14 +72,12 @@ class DaskFunction(ot.OpenTURNSPythonFunction):
             name="dask_worker",
             job_extra_directives=self.dask_options,
             interface="ib0",
-            job_directives_skip=['-n 1']
         )
         if verbose:
             print(
                 "** Requested ressources **\n"
-                "**************************"
+                "**************************\n"
                 f"+ job_number--------{self.job_number}\n"
-                f"+ nodes_per_job-----{self.nodes_per_job}\n"
                 f"+ cpus_per_job------{self.cpus_per_job}\n"
                 f"+ timeout_per_job---{self.timeout_per_job} minutes\n"
                 f"+ memory_per_job----{self.memory_per_job} MB\n"
@@ -110,6 +104,16 @@ class DaskFunction(ot.OpenTURNSPythonFunction):
 
         # Create a Client for the SLURMCluster object
         client = Client(self.cluster)
+        print(self.cluster.job_script())
+
+        # OPTION 0
+        futures = []
+        for x in X:
+            print("Submitting ", x)
+            futures.append(client.submit(self._callable, x))
+            print("Submitted ", x)
+        outputs = client.gather(futures)
+        client.close()
 
         # OPTION 1
         # futures = client.map(self._callable, X)
@@ -117,12 +121,12 @@ class DaskFunction(ot.OpenTURNSPythonFunction):
 
         # OPTION 2
         # WE NOTICE THAT THE 'PENDING' STATE IS LONGER BUT THIS ALLOWS US TO USE OpenTURNS ALGORITHMS
-        async def f():
-            futures = client.map(self._callable, X)
-            outputs = await client.gather(futures, asynchronous=True)
-            return outputs
-        outputs = client.sync(f)
-        client.close()
+        # async def f():
+        #     futures = client.map(self._callable, X)
+        #     outputs = await client.gather(futures, asynchronous=True)
+        #     return outputs
+        # outputs = client.sync(f)
+        # client.close()
 
         # OPTION 3 (to be tested)
         # From Dask documentation: https://distributed.dask.org/en/stable/asynchronous.html

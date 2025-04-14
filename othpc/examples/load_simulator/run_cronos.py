@@ -9,10 +9,11 @@ import othpc
 import openturns as ot
 from MPILoadSimulator import MPILoadSimulator
 
-cb = MPILoadSimulator(executable_file="./bin/myMPIProgram", nb_proc=80, simu_duration=30)
-dw = othpc.DaskFunction(cb, nodes_per_job=2, cpus_per_job=40, job_number=2, verbose=True)
+cb = MPILoadSimulator(simu_duration=60)
+
+dw = othpc.DaskFunction(cb, cpus_per_job=1, job_number=3, timeout_per_job=10, verbose=True)
 # dwfun = ot.Function(dw)
 X = ot.Sample.ImportFromCSVFile("input_doe/doe_small.csv", ",")
-Y = dw(X[:2])
+Y = dw(X[:3])
 print(Y)
 # othpc.make_summary_file("my_results", summary_file="summary_table.csv")

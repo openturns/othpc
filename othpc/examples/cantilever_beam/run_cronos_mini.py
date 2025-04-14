@@ -10,8 +10,8 @@ import openturns as ot
 from cantilever_beam import CantileverBeam
 
 cb = CantileverBeam("template/beam_input_template.xml", "template/beam", "my_results")
-dw = othpc.DaskFunction(cb, cpus_per_job=5, job_number=10, verbose=True)
-X = ot.Sample.ImportFromCSVFile("input_doe/doe.csv", ",")
+dw = othpc.DaskFunction(cb, nodes_per_job=1, cpus_per_job=95, job_number=1, verbose=True)
+X = ot.Sample.ImportFromCSVFile("input_doe/doe100.csv", ",")
 Y = dw(X)
 print(Y)
 othpc.make_summary_file("my_results", summary_file="summary_table.csv")

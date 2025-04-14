@@ -10,8 +10,8 @@ import openturns as ot
 import openturns.coupling_tools as otct
 import othpc
 from subprocess import CalledProcessError
-
 from xml.dom import minidom
+from othpc.utils import fake_load
 
 class CantileverBeam(ot.OpenTURNSPythonFunction):
     """
@@ -65,7 +65,8 @@ class CantileverBeam(ot.OpenTURNSPythonFunction):
             ['@F@', '@E@', '@L@', '@I@'],
             [x[0], x[1], x[2], x[3]],
             )
-        
+    
+
     def _parse_output(self, simulation_directory):
         """
         Parses outputs in the simulation directory related to one evaluation and returns output value. 
@@ -103,6 +104,7 @@ class CantileverBeam(ot.OpenTURNSPythonFunction):
                 otct.execute(f"{self.executable_file} -x beam_input.xml", cwd=simu_dir, capture_output=True)
                 # Parse outputs
                 y = self._parse_output(simu_dir)
+                fake_load(120) # Creates a fake load simulator for 30 sec.
             except CalledProcessError as error:
                 # TODO: implement a logging option
                 othpc.evaluation_error_log(error, simu_dir, "CantileverBeam_RuntimeError.txt")
@@ -110,6 +112,7 @@ class CantileverBeam(ot.OpenTURNSPythonFunction):
             # Write input-output summary csv file
             othpc.make_report_file(simu_dir, x, [y])
         return [y]
+    
 
 if __name__ == "__main__":
     g = CantileverBeam()

@@ -11,6 +11,8 @@ import pandas as pd
 import shutil
 import os
 import openturns as ot
+import time 
+import math
 
 
 class TempSimuDir(object):
@@ -163,6 +165,10 @@ def evaluation_error_log(error, simulation_directory, name="evaluation_error.txt
     f.write(error.__str__())
     f.close()
 
+def fake_load(duration=30):
+    start = time.time()
+    while time.time() - start < duration:
+        a = math.sqrt(64 * 64 * 64 * 64 * 64)
 
 # class MemoizeWithSave(ot.MemoizeFunction):
 #     """
