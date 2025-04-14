@@ -111,6 +111,8 @@ class CantileverBeam(ot.OpenTURNSPythonFunction):
             othpc.make_report_file(simu_dir, x, [y])
         return [y]
 
-# TODO 
-# ----
-# Modify the beam example to include requirement file that should be copied in each simu_dir
+if __name__ == "__main__":
+    g = CantileverBeam()
+    X = [[1, 2, 3, 4]]
+    Y = g(X)
+    print(Y)

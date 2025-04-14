@@ -62,16 +62,13 @@ class DaskFunction(ot.OpenTURNSPythonFunction):
         self._callable = callable
         self.setInputDescription(callable.getInputDescription())
         self.setOutputDescription(callable.getOutputDescription())
-        if slurm_wckey is not None:
-            self.dask_options = [f"--wckey={slurm_wckey}"] + slurm_extra_options
-        else:
-            self.dask_options = slurm_extra_options
         self.job_number = job_number
         self.nodes_per_job = nodes_per_job
         self.cpus_per_job = cpus_per_job
         self.timeout_per_job = timeout_per_job
         self.memory_per_job = memory_per_job
         self.slurm_extra_options = slurm_extra_options
+        self.dask_options = [f"--wckey={slurm_wckey}"] + slurm_extra_options + [f"--nodes={nodes_per_job}"]
         self.cluster = SLURMCluster(
             cores=self.cpus_per_job,
             memory=f"{self.memory_per_job} MB",
@@ -79,6 +76,7 @@ class DaskFunction(ot.OpenTURNSPythonFunction):
             name="dask_worker",
             job_extra_directives=self.dask_options,
             interface="ib0",
+            job_directives_skip=['-n 1']
         )
         if verbose:
             print(
@@ -105,7 +103,7 @@ class DaskFunction(ot.OpenTURNSPythonFunction):
             This object contains the output results.
         """
         X = ot.Sample(X)
-        print(X)
+        # print(X)
         # Creates job_number SLURM jobs
         self.cluster.scale(self.job_number)
         # print(f"> The dashboard link from the cluster : {self.cluster.dashboard_link}")

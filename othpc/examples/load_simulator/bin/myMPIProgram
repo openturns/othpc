@@ -1,0 +1,104 @@
+#!/usr/bin/env python3
+from mpi4py import MPI
+import sys
+import os
+import time
+import math
+from optparse import OptionParser
+
+comm = MPI.COMM_WORLD
+rank = comm.Get_rank()
+size = comm.Get_size()
+
+
+def process_cmd_line(argv):
+    """Processes the passed command line arguments."""
+    parser = OptionParser(
+        usage="usage: %prog *args [options]",
+        description="sum all argsv : need to be float or int and write the result in a .txt file",
+    )
+
+    parser.add_option(
+        "-r",
+        "--result",
+        dest="resultDir",
+        type="str",
+        help="result directory default ./",
+        default="./",
+    )
+
+    parser.add_option(
+        "--cpu-interval",
+        dest="cpuInterval",
+        type="float",
+        help="cpu duration of myProg execution",
+        default=10.0,
+    )
+
+    parser.add_option(
+        "--cpu-load",
+        dest="cpuLoad",
+        type="float",
+        help="cpu load of myProg %",
+        default=90.0,
+    )
+
+    parser.add_option(
+        "--restart-path",
+        dest="restartPath",
+        type="str",
+        help="restartPath, previous computed value is added",
+        default=False,
+    )
+
+    (options, args) = parser.parse_args(argv)
+    return options, args
+
+
+def generate_cpu_load(interval, utilization):
+    "Generate a utilization % for a duration of interval seconds"
+    start_time = time.time()
+    # print("About to do some arithmetic")
+    while time.time() - start_time < interval * utilization / 100.0:
+        a = math.sqrt(64 * 64 * 64 * 64 * 64)
+    # print("About to sleep : simulate some postProcess")
+    time.sleep(interval * (1 - utilization / 100.0))
+
+
+def main(args, options):
+    """
+    main program function
+    """
+
+    if rank == 0:
+        totalSum = 0.0
+    # Function to mimic typical code restart mechanism
+        if options.restartPath:
+            resultFile = open(os.path.join(options.restartPath, "result.txt"), "r")
+            lines = resultFile.readlines()
+            Y1 = float(lines[-1].split(":")[-1])
+            resultFile.close()
+            totalSum = Y1
+    else:
+        totalSum = None
+
+    totalSum = comm.bcast(totalSum, root=0)
+
+    for elt in args:
+        number = float(elt)
+        totalSum += number
+    
+    totalSum = math.sqrt(totalSum)
+
+    # simulate program duration and associated cpu load
+    generate_cpu_load(interval=options.cpuInterval, utilization=options.cpuLoad)
+
+    if rank == 0:
+        resultFile = os.path.join(options.resultDir, "result.txt")
+        with open(resultFile, "w") as f:
+            f.write("result is : %.16e" % (totalSum))
+
+
+if __name__ == "__main__":
+    options, args = process_cmd_line(sys.argv[1:])
+    main(args, options)

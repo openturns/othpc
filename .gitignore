@@ -1,5 +1,6 @@
 .obsidian/*
 
+*.out*
 *log*
 *.log
 *my_results*
@@ -19,3 +20,4 @@
 *__pycache__*
 .vscode
 *othpc.egg-info*
+othpc/examples/cathare_bethsy/*
