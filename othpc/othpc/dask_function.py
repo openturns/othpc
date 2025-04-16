@@ -109,9 +109,8 @@ class DaskFunction(ot.OpenTURNSPythonFunction):
         # OPTION 0
         futures = []
         for x in X:
-            print("Submitting ", x)
             futures.append(client.submit(self._callable, x))
-            print("Submitted ", x)
+        progress(futures)
         outputs = client.gather(futures)
         client.close()
 
