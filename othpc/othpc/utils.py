@@ -11,9 +11,11 @@ import pandas as pd
 import shutil
 import os
 import openturns as ot
-import time 
+import time
 import math
 import logging
+
+# from dask.distributed import print
 
 
 class TempSimuDir(object):
@@ -141,12 +143,12 @@ def load_cache(function, summary_file):
 
     Parameters
     ----------
-    function : ot.Function
+    function : ot.Function or ot.OpenTURNSPythonFunction
         Function that will be turned into a ot.MemoizeFunction
     summary_file : string
         Path to the summary file created by the make_summary_file method.
     """
-    memoize_function = ot.MemoizeFunction(function)
+    memoize_function = ot.MemoizeFunction(ot.Function(function))
     # load the cache from the summary file
     df = pd.read_csv(summary_file)
     df = df.drop(columns=df.columns[0])
@@ -164,12 +166,12 @@ def load_cache(function, summary_file):
 def evaluation_error_log(error, simulation_directory, name="evaluation_error.txt"):
     logger = logging.getLogger(__name__)
     logfile = os.path.join(simulation_directory, name)
-    fh = logging.FileHandler(filename=logfile, mode='w')
+    fh = logging.FileHandler(filename=logfile, mode="w")
 
     # Create a formatter for the file handlers
     formatter = logging.Formatter(
-        fmt='%(asctime)s %(levelname)-8s %(message)s',
-        datefmt='%y-%m-%d %H:%M:%S')
+        fmt="%(asctime)s %(levelname)-8s %(message)s", datefmt="%y-%m-%d %H:%M:%S"
+    )
     fh.setFormatter(formatter)
 
     # Add the handler to the logger
@@ -181,6 +183,7 @@ def fake_load(duration=30):
     start = time.time()
     while time.time() - start < duration:
         a = math.sqrt(64 * 64 * 64 * 64 * 64)
+
 
 # class MemoizeWithSave(ot.MemoizeFunction):
 #     """
