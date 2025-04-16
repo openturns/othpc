@@ -13,6 +13,7 @@ import os
 import openturns as ot
 import time 
 import math
+import logging
 
 
 class TempSimuDir(object):
@@ -161,9 +162,20 @@ def load_cache(function, summary_file):
 
 
 def evaluation_error_log(error, simulation_directory, name="evaluation_error.txt"):
-    f = open(os.path.join(simulation_directory, name), "w")
-    f.write(error.__str__())
-    f.close()
+    logger = logging.getLogger(__name__)
+    logfile = os.path.join(simulation_directory, name)
+    fh = logging.FileHandler(filename=logfile, mode='w')
+
+    # Create a formatter for the file handlers
+    formatter = logging.Formatter(
+        fmt='%(asctime)s %(levelname)-8s %(message)s',
+        datefmt='%y-%m-%d %H:%M:%S')
+    fh.setFormatter(formatter)
+
+    # Add the handler to the logger
+    logger.addHandler(fh)
+    logger.error(error)
+
 
 def fake_load(duration=30):
     start = time.time()
