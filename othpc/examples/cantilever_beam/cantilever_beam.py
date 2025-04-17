@@ -6,12 +6,14 @@ Copyright (C) EDF 2025
 @authors: Elias Fekhari, Joseph Muré
 """
 import os
+import time
 import openturns as ot
 import openturns.coupling_tools as otct
 import othpc
 from subprocess import CalledProcessError
 from xml.dom import minidom
 from othpc.utils import fake_load
+from dask.distributed import print
 
 class CantileverBeam(ot.OpenTURNSPythonFunction):
     """
@@ -104,7 +106,8 @@ class CantileverBeam(ot.OpenTURNSPythonFunction):
                 otct.execute(f"{self.executable_file} -x beam_input.xml", cwd=simu_dir, capture_output=True)
                 # Parse outputs
                 y = self._parse_output(simu_dir)
-                fake_load(120) # Creates a fake load simulator for 30 sec.
+                fake_load(10) # Creates a fake load simulator for 30 sec.
+                print(f"RUN {simu_dir[-30:]} - {time.ctime(time.time())}")
             except CalledProcessError as error:
                 # TODO: implement a logging option
                 othpc.evaluation_error_log(error, simu_dir, "CantileverBeam_RuntimeError.txt")
