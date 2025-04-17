@@ -5,11 +5,13 @@ Copyright (C) EDF 2025
 
 @authors: Elias Fekhari, Joseph Muré, Michaël Baudin
 """
+import os
 import time
 import othpc
 import datetime
 import openturns as ot
-from simple_slurm import Slurm 
+
+from simple_slurm import Slurm
 import openturns.coupling_tools as otct
 
 
@@ -17,13 +19,10 @@ class JobArrayFunction(ot.OpenTURNSPythonFunction):
     """
     TBD
     """
+
     def __init__(
         self,
-        script_name,
-        class_name, 
-        class_args,# warning, it has to be a string 
-        input_dim, 
-        output_dim, 
+        callable,
         job_number=1,
         nodes_per_job=1,
         cpus_per_job=4,
@@ -33,7 +32,7 @@ class JobArrayFunction(ot.OpenTURNSPythonFunction):
         # slurm_extra_options=["--output=logs/output.log", "--error=logs/error.log"],
         # verbose=False,
     ):
-        super().__init__(input_dim, output_dim)
+        super().__init__(callable.getInputDimension(), callable.getOutputDimension())
         self.job_number = job_number
         self.nodes_per_job = nodes_per_job
         self.cpus_per_job = cpus_per_job
@@ -42,30 +41,36 @@ class JobArrayFunction(ot.OpenTURNSPythonFunction):
         # self.slurm_extra_options = slurm_extra_options
         self.slurm_wckey = slurm_wckey
         #
-        self.script_name = script_name
-        self.class_name = class_name
-        self.class_args = class_args
-        # tmp_dir/launcher_template.py ou .sh
-        # Create a launcher_script template with the requirements
-        
-        
+        self.class_name = type(callable).__name__
+        self.callable = callable
+
     def _exec_sample(self, X):
         X = ot.Sample(X)
-        job_launcher_template = f"""import openturns as ot
-from {self.script_name} import {self.class_name}
-instance = {self.class_name}({self.class_args})
-"""
+
         outputs = ot.Sample(0, self.getOutputDimension())
         with othpc.TempSimuDir(res_dir=".", prefix="tmp_", cleanup=True) as tmp_dir:
-            # Create job_launchers 
+            # Create model in the simulation directory
+            study_path = os.path.join(tmp_dir, "user_function.xml")
+            study = ot.Study()
+            study.setStorageManager(ot.XMLStorageManager(study_path))
+            study.add("user_function", ot.Function(self.callable))
+            study.save()
+
+            # Create job_launchers
             for i, x in enumerate(X):
-                ot.Sample.BuildFromPoint(x).exportToCSVFile(f"xsample_{i}.csv")
-                specific_string = f"""
-x = ot.Sample.ImportFromCSVFile("xsample_{i}.csv")
-y = instance(x)
-y.exportToCSVFile(f"ysample_{i}.csv")
+                input_path = os.path.join(tmp_dir, f"xsample_{i}.csv")
+                output_path = os.path.join(tmp_dir, f"ysample_{i}.csv")
+                ot.Sample.BuildFromPoint(x).exportToCSVFile(input_path)
+                job_launcher_string = f"""import openturns as ot
+study = ot.Study()
+study.setStorageManager(ot.XMLStorageManager("{study_path}"))
+study.load()
+user_function = ot.Function()
+study.fillObject("user_function", user_function)
+x = ot.Sample.ImportFromCSVFile("{input_path}")
+y = user_function(x)
+y.exportToCSVFile({output_path})
 """
-                job_launcher_string = job_launcher_template + specific_string
                 # Write the job_launcher
                 with open(f"job_launcher_{i}.py", "w") as file:
                     file.write(job_launcher_string)
@@ -78,16 +83,25 @@ y.exportToCSVFile(f"ysample_{i}.csv")
                 job_name=self.class_name,
                 output=f"logs/{Slurm.JOB_ARRAY_MASTER_ID}_{Slurm.JOB_ARRAY_ID}.out",
                 time=datetime.timedelta(minutes=self.timeout_per_job),
-                wckey=self.slurm_wckey
+                wckey=self.slurm_wckey,
             )
             # slurm.add_cmd(f"#SBATCH {extra_option}")
             slurm.sbatch("python job_launcher_$SLURM_ARRAY_TASK_ID.py", convert=False)
             # Wait until finished
-            time.sleep(60)
 
-            
-            
+            remaining_jobs = len(X)
+            while remaining_jobs > 0:
+                time.sleep(10)
+                slurm.squeue.update_squeue()
+                jobs = slurm.squeue.jobs
+                remaining_jobs = len(jobs)
+
             for i in range(len(X)):
-                outputs.add(ot.Sample.ImportFromCSVFile(f"ysample_{i}.csv"))
+                output_path = os.path.join(tmp_dir, f"ysample_{i}.csv")
+                try:
+                    output = ot.Sample.ImportFromCSVFile(output_path)
+                except:
+                    output = ot.Sample(1, self.getOutputDimension())
+                    output[0, 0] = float("nan")
+                outputs.add(output)
         return outputs
-        
