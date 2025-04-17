@@ -17,7 +17,8 @@ try:
     os.mkdir(my_results_directory)
 except FileExistsError:
     pass
-dw = othpc.JobArrayFunction("cantilever_beam", )
+cb = CantileverBeam(input_template_file, executable_file, my_results_directory)
+dw = othpc.JobArrayFunction(cb, job_number=10, cpus_per_job=1, timeout_per_job=1)
 dwfun = ot.Function(dw)
 #
 X = ot.Sample.ImportFromCSVFile("input_doe/doe.csv", ",")

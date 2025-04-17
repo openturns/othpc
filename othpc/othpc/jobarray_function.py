@@ -10,6 +10,10 @@ import time
 import othpc
 import datetime
 import openturns as ot
+import subprocess
+from io import StringIO
+import csv
+
 
 from simple_slurm import Slurm
 import openturns.coupling_tools as otct
@@ -48,7 +52,9 @@ class JobArrayFunction(ot.OpenTURNSPythonFunction):
         X = ot.Sample(X)
 
         outputs = ot.Sample(0, self.getOutputDimension())
-        with othpc.TempSimuDir(res_dir=".", prefix="tmp_", cleanup=True) as tmp_dir:
+        with othpc.TempSimuDir(res_dir=".", prefix="tmp_", cleanup=False) as tmp_dir:
+            tmp_dir = os.path.abspath(tmp_dir)
+            print("Path repo temporaire", tmp_dir)
             # Create model in the simulation directory
             study_path = os.path.join(tmp_dir, "user_function.xml")
             study = ot.Study()
@@ -60,6 +66,7 @@ class JobArrayFunction(ot.OpenTURNSPythonFunction):
             for i, x in enumerate(X):
                 input_path = os.path.join(tmp_dir, f"xsample_{i}.csv")
                 output_path = os.path.join(tmp_dir, f"ysample_{i}.csv")
+                job_launcher_path = os.path.join(tmp_dir, f"job_launcher_{i}.py")
                 ot.Sample.BuildFromPoint(x).exportToCSVFile(input_path)
                 job_launcher_string = f"""import openturns as ot
 study = ot.Study()
@@ -69,10 +76,10 @@ user_function = ot.Function()
 study.fillObject("user_function", user_function)
 x = ot.Sample.ImportFromCSVFile("{input_path}")
 y = user_function(x)
-y.exportToCSVFile({output_path})
+y.exportToCSVFile("{output_path}")
 """
                 # Write the job_launcher
-                with open(f"job_launcher_{i}.py", "w") as file:
+                with open(job_launcher_path, "w") as file:
                     file.write(job_launcher_string)
 
             slurm = Slurm(
@@ -92,8 +99,28 @@ y.exportToCSVFile({output_path})
             remaining_jobs = len(X)
             while remaining_jobs > 0:
                 time.sleep(10)
-                slurm.squeue.update_squeue()
-                jobs = slurm.squeue.jobs
+
+                result = subprocess.run(
+                    [slurm.squeue.command, "--me", "-o", slurm.squeue.output_format],
+                    stdout=subprocess.PIPE,
+                    stderr=subprocess.PIPE,
+                    text=True,
+                )
+
+                if result.returncode != 0:
+                    raise RuntimeError(f"Error running squeue: {result.stderr}")
+
+                csv_file = StringIO(result.stdout.strip())
+                reader = csv.DictReader(
+                    csv_file, delimiter=",", quotechar='"', skipinitialspace=True
+                )
+                jobs = {}
+                for num, row in enumerate(reader):
+                    # jobs[int(row["JOBID"])] = row
+                    jobs[num] = row
+                # slurm.squeue.update_squeue()
+                # jobs = slurm.squeue.jobs
+                print(jobs)
                 remaining_jobs = len(jobs)
 
             for i in range(len(X)):
