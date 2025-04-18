@@ -14,7 +14,7 @@ import openturns as ot
 import time
 import math
 import logging
-
+import subprocess
 # from dask.distributed import print
 
 
@@ -183,6 +183,26 @@ def fake_load(duration=30):
     start = time.time()
     while time.time() - start < duration:
         a = math.sqrt(64 * 64 * 64 * 64 * 64)
+
+
+def get_slurm_jobs():
+    try:
+        result = subprocess.run(["squeue", "--noheader", "--format=%i %j %t %M %D %C %m %R"],
+                                capture_output=True, text=True, check=True)
+        job_data = []
+        for line in result.stdout.strip().split("\n"):
+            if line:
+                id, name, status, time, nb_nodes, nb_cpus, memory, nodes = line.strip().split(maxsplit=7)
+                job_data.append((id, name, status, time, nb_nodes, nb_cpus, memory, nodes))
+        df = pd.DataFrame(job_data, columns=["JOBID", "NAME", "ST", "TIME", "NODES", "CPUS", "MIN_MEMORY", "NODELIST"])
+        return df
+
+    except subprocess.CalledProcessError as e:
+        print("Error running squeue:", e)
+        return []
+    except Exception as e:
+        print("Unexpected error:", e)
+        return []
 
 
 # class MemoizeWithSave(ot.MemoizeFunction):
