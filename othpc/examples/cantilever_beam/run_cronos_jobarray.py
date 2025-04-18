@@ -18,10 +18,10 @@ try:
 except FileExistsError:
     pass
 cb = CantileverBeam(input_template_file, executable_file, my_results_directory)
-dw = othpc.JobArrayFunction(cb, job_number=10, cpus_per_job=1, timeout_per_job=1)
+dw = othpc.JobArrayFunction(cb, job_number=1, cpus_per_job=1, timeout_per_job=1)
 dwfun = ot.Function(dw)
 #
 X = ot.Sample.ImportFromCSVFile("input_doe/doe.csv", ",")
-Y = dwfun(X)
+Y = dwfun(X[0:2])
 print(Y)
 othpc.make_summary_file("my_results", summary_file="summary_table.csv")
