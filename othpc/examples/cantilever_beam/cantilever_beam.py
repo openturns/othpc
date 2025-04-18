@@ -15,40 +15,51 @@ from xml.dom import minidom
 from othpc.utils import fake_load
 from dask.distributed import print
 
+
 class CantileverBeam(ot.OpenTURNSPythonFunction):
     """
-    This class allows to evaluate the executable of the cantilever beam on various input points. 
+    This class allows to evaluate the executable of the cantilever beam on various input points.
 
-    Parameters: 
+    Parameters:
     ----------
     input_template_file : str
-        This input file has been modified with tags replacing the numerical values of the input variables. 
-        
+        This input file has been modified with tags replacing the numerical values of the input variables.
+
     executable_file : str
         TBD
 
-    results_directory : str 
+    results_directory : str
         TBD
     """
+
     def __init__(self, input_template_file, executable_file, results_directory):
         super().__init__(4, 1)
         #
         if not os.path.isfile(input_template_file):
-            raise ValueError(f"The input template {input_template_file} file does not exist.")
+            raise ValueError(
+                f"The input template {input_template_file} file does not exist."
+            )
         self.input_template_file = os.path.abspath(input_template_file)
         #
+        license_file = os.path.join(
+            os.path.dirname(self.input_template_file), "LICENCE.xml"
+        )
+        if not os.path.isfile(license_file):
+            raise ValueError(f"The license file {license_file} does not exist.")
+        self.license_file = license_file
         if not os.path.isfile(executable_file):
             raise ValueError(f"The executable {executable_file} does not exist.")
         self.executable_file = os.path.abspath(executable_file)
         #
         if not os.path.exists(results_directory):
-            raise ValueError(f"The working directory {results_directory} does not exist.")
+            raise ValueError(
+                f"The working directory {results_directory} does not exist."
+            )
         self.results_directory = os.path.abspath(results_directory)
-
 
     def _create_input_files(self, x, simulation_directory):
         """
-        Creates one input file which includes the values of the input point x. 
+        Creates one input file which includes the values of the input point x.
 
         Parameters
         ----------
@@ -56,66 +67,75 @@ class CantileverBeam(ot.OpenTURNSPythonFunction):
             Input point to be evaluated, in this example, inputs are (F, E, L, I).
 
         simulation_directory : str
-            Simulation directory dedicated to the evaluation of the input point x. 
+            Simulation directory dedicated to the evaluation of the input point x.
         """
         # Creation du fichier d'entree
         otct.replace(
             # File template including your tokens to be replaced by values from a design of exp.
             self.input_template_file,
             # File written after replacing the tokens by the values in X
-            os.path.join(simulation_directory, 'beam_input.xml'),
-            ['@F@', '@E@', '@L@', '@I@'],
+            os.path.join(simulation_directory, "beam_input.xml"),
+            ["@F@", "@E@", "@L@", "@I@"],
             [x[0], x[1], x[2], x[3]],
-            )
-    
+        )
 
     def _parse_output(self, simulation_directory):
         """
-        Parses outputs in the simulation directory related to one evaluation and returns output value. 
+        Parses outputs in the simulation directory related to one evaluation and returns output value.
 
         Parameters
         ----------
         simulation_directory : str
-            Simulation directory dedicated to the evaluation of the input point x. 
+            Simulation directory dedicated to the evaluation of the input point x.
         """
         # Lecture de la sortie
         try:
-            xmldoc = minidom.parse(os.path.join(simulation_directory, '_beam_outputs_.xml'))
-            itemlist = xmldoc.getElementsByTagName('outputs')
-            y = float(itemlist[0].attributes['deviation'].value)
+            xmldoc = minidom.parse(
+                os.path.join(simulation_directory, "_beam_outputs_.xml")
+            )
+            itemlist = xmldoc.getElementsByTagName("outputs")
+            y = float(itemlist[0].attributes["deviation"].value)
         except FileNotFoundError as err:
             print(err)
             print(f"WARNING: the following file was not found: {simulation_directory}")
-            y = float('nan')
+            y = float("nan")
         return y
 
     def _exec(self, x):
         """
-        Executes one evaluation of the black-box model for one input x. 
+        Executes one evaluation of the black-box model for one input x.
 
         Parameters
         ----------
         x : list
             Input point to be evaluated, in this example, inputs are (F, E, L, I).
         """
-        with othpc.TempSimuDir(res_dir=self.results_directory, to_be_copied=["template/LICENCE.xml"]) as simu_dir:
+        with othpc.TempSimuDir(
+            res_dir=self.results_directory, to_be_copied=[self.license_file]
+        ) as simu_dir:
             # Create input files
             self._create_input_files(x, simu_dir)
             # Execution
-            try: 
-                otct.execute(f"{self.executable_file} -x beam_input.xml", cwd=simu_dir, capture_output=True)
+            try:
+                otct.execute(
+                    f"{self.executable_file} -x beam_input.xml",
+                    cwd=simu_dir,
+                    capture_output=True,
+                )
                 # Parse outputs
                 y = self._parse_output(simu_dir)
-                fake_load(10) # Creates a fake load simulator for x sec.
+                fake_load(10)  # Creates a fake load simulator for x sec.
                 print(f"RUN {simu_dir[-30:]} - {time.ctime(time.time())}")
             except CalledProcessError as error:
                 # TODO: implement a logging option
-                othpc.evaluation_error_log(error, simu_dir, "CantileverBeam_RuntimeError.txt")
+                othpc.evaluation_error_log(
+                    error, simu_dir, "CantileverBeam_RuntimeError.txt"
+                )
                 y = float("nan")
             # Write input-output summary csv file
             othpc.make_report_file(simu_dir, x, [y])
         return [y]
-    
+
 
 if __name__ == "__main__":
     g = CantileverBeam()
