@@ -2,6 +2,7 @@
 
 from .dask_function import DaskFunction
 from .jobarray_function import JobArrayFunction
+from .submitit_function import SubmitItFunction
 from .utils import (
     TempSimuDir,
     make_report_file,
@@ -13,6 +14,7 @@ from .utils import (
 __all__ = [
     "DaskFunction",
     "JobArrayFunction",
+    "SubmitItFunction",
     "TempSimuDir",
     "make_report_file",
     "make_summary_file",
