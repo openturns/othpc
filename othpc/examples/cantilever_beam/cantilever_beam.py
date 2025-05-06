@@ -34,6 +34,8 @@ class CantileverBeam(ot.OpenTURNSPythonFunction):
 
     def __init__(self, input_template_file, executable_file, results_directory):
         super().__init__(4, 1)
+        self.setInputDescription(["F", "E", "L", "I"])
+        self.setOutputDescription(["Y"])
         #
         if not os.path.isfile(input_template_file):
             raise ValueError(

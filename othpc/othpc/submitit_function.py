@@ -13,6 +13,8 @@ import inspect
 import openturns as ot
 import openturns.coupling_tools as otct
 import submitit
+from tqdm import tqdm
+from numpy import concatenate
 
 
 class SubmitItFunction(ot.OpenTURNSPythonFunction):
@@ -23,7 +25,7 @@ class SubmitItFunction(ot.OpenTURNSPythonFunction):
     def __init__(
         self,
         callable,
-        job_number=1,
+        tasks_per_job=1,
         nodes_per_job=1,
         cpus_per_job=4,
         timeout_per_job=5,
@@ -33,17 +35,16 @@ class SubmitItFunction(ot.OpenTURNSPythonFunction):
         verbose=False,
     ):
         super().__init__(callable.getInputDimension(), callable.getOutputDimension())
-        self.job_number = job_number
+        self.setInputDescription(callable.getInputDescription())
+        self.setOutputDescription(callable.getOutputDescription())
+        self.tasks_per_job = tasks_per_job
         self.nodes_per_job = nodes_per_job
         self.cpus_per_job = cpus_per_job
         self.timeout_per_job = timeout_per_job
         self.memory_per_job = memory_per_job
         self.slurm_extra_options = slurm_extra_options
         self.slurm_wckey = slurm_wckey
-        #
-        self.class_name = type(callable).__name__
         self.callable = callable
-        self.callable_file = inspect.getfile(type(callable))
 
         self.executor = submitit.AutoExecutor(folder="logs/%j")
         self.executor.update_parameters(
@@ -66,13 +67,38 @@ class SubmitItFunction(ot.OpenTURNSPythonFunction):
         # print(self.callable_file)
 
     def _exec_sample(self, X):
+        # Divide input points across jobs (e.g. create batches)
         X = ot.Sample(X)
-        outputs = ot.Sample(len(X), self.getOutputDimension())
-        jobs = self.executor.map_array(self.callable, X)
-        for i in range(len(X)):
-            outputs[i] = jobs[i].result()
-        return outputs
+        X.setDescription(
+            self.getInputDescription()
+        )  # for accurate prints in print_and_call
+        # tasks_per_job = len(X) // self.job_number
+        job_number = len(X) // self.tasks_per_job
+        if (
+            len(X) % self.tasks_per_job
+        ):  # if the input size is not divisible by the number of tasks per job
+            job_number += 1  # an additional job is needed
+        subsamples = [
+            X[self.tasks_per_job * i : self.tasks_per_job * (i + 1)]
+            for i in range(job_number)
+        ]
 
+        # Submit multiple jobs
+        jobs = [
+            self.executor.submit(self.callable, subsample) for subsample in subsamples
+        ]
 
-# TODO:
-# Allow to have batches instead of the current 1 job per evaluation
+        # Track progress
+        with tqdm(total=job_number) as pbar:
+            completed = [False] * len(jobs)
+            while not all(completed):
+                for i, job in enumerate(jobs):
+                    if not completed[i] and job.done():
+                        completed[i] = True
+                        pbar.update(1)
+                time.sleep(1)  # Avoid spamming the scheduler
+
+        # Return outputs
+        result = ot.Sample(concatenate([job.result() for job in jobs], axis=0))
+        result.setDescription(self.getOutputDescription())
+        return result
