@@ -18,7 +18,7 @@ try:
 except FileExistsError:
     pass
 cb = CantileverBeam(input_template_file, executable_file, my_results_directory)
-dw = othpc.SubmitItFunction(cb, tasks_per_job=3, cpus_per_job=1, timeout_per_job=5)
+dw = othpc.SubmitItFunction(cb, tasks_per_job=2, cpus_per_job=2, timeout_per_job=5)
 dwfun = ot.Function(dw)
 #
 X = ot.Sample.ImportFromCSVFile("input_doe/doe.csv", ",")

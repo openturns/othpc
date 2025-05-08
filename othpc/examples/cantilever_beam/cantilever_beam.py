@@ -126,7 +126,7 @@ class CantileverBeam(ot.OpenTURNSPythonFunction):
                 )
                 # Parse outputs
                 y = self._parse_output(simu_dir)
-                fake_load(10)  # Creates a fake load simulator for x sec.
+                fake_load(70)  # Creates a fake load simulator for x sec.
                 print(f"RUN {simu_dir[-30:]} - {time.ctime(time.time())}")
             except CalledProcessError as error:
                 # TODO: implement a logging option
