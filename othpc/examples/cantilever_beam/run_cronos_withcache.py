@@ -18,8 +18,8 @@ try:
     os.mkdir(my_results_directory)
 except FileExistsError:
     pass
-cb = CantileverBeam(input_template_file, executable_file, my_results_directory)
-dw = othpc.DaskFunction(cb)
+cb = CantileverBeam(input_template_file, executable_file, my_results_directory, n_cpus=2)
+dw = othpc.SubmitItFunction(cb, tasks_per_job=2, cpus_per_job=2, timeout_per_job=5)
 dwfun = ot.Function(dw)
 memoize_dwfun = othpc.load_cache(
     dwfun, os.path.join(my_results_directory, "summary_table.csv")

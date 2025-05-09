@@ -34,12 +34,13 @@ where `beam_input.xml` is the input file containing the four parameter. Note tha
   The creation of your environment (second line), does not need to be repeated at each connection.
 
 - Clone the git repository in your "scratch" space and create your branch:
-  
+  ```
   (myenv) [NNI-crfront1-pts48] ~$ cd /scratch/users/{NNI}/
   (myenv) [NNI-crfront1-pts48] ~$ git clone /https://gitlab.pleiade.edf.fr/projet-incertitudes/openturns/openturns/actions-openturns/hpc-phimeca.git
   (myenv) [NNI-crfront1-pts48] ~$ cd /scratch/users/{NNI}/hpc-phimeca/othpc/
   (myenv) [NNI-crfront1-pts48] ~$ pip install -e .
   ```
+  
 ## 2- Files required for the cantilever beam  
 
 The requirements for this example include:

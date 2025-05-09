@@ -18,25 +18,23 @@ try:
     os.mkdir(my_results_directory)
 except FileExistsError:
     pass
-cb = CantileverBeam(input_template_file, executable_file, my_results_directory)
-nb_cpus_per_jobs = 5
-dw = othpc.DaskFunction(cb, cpus_per_job=nb_cpus_per_jobs, job_number=3)
+cpus_per_jobs = 2
+cb = CantileverBeam(input_template_file, executable_file, my_results_directory, n_cpus=cpus_per_jobs)
+dw = othpc.SubmitItFunction(cb, tasks_per_job=cpus_per_jobs, cpus_per_job=cpus_per_jobs, timeout_per_job=5)
 dwfun = ot.Function(dw)
 
-
 # Load distributions from the OpenTURNS CantileverBeam example
-cb = cantilever_beam.CantileverBeam()
-distribution = cb.distribution
+openturns_example = cantilever_beam.CantileverBeam()
+distribution = openturns_example.distribution
 distribution.setDescription(["E", "F", "L", "I"])
 vect = ot.RandomVector(distribution)
 Yvect = ot.CompositeRandomVector(dwfun, vect)
 # Build ExpectedSimulationAlgorithm
 algo = ot.ExpectationSimulationAlgorithm(Yvect)
 algo.setMaximumOuterSampling(3)
-algo.setBlockSize(nb_cpus_per_jobs * 3)
+algo.setBlockSize(cpus_per_jobs)
 algo.setMaximumCoefficientOfVariation(-1.0)
 algo.run()
 result = algo.getResult()
 expectation = result.getExpectationEstimate()
 print(expectation)
-# othpc.make_summary_file(my_results_directory, summary_file="summary_table.csv")

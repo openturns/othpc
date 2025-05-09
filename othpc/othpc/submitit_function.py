@@ -10,7 +10,7 @@ import submitit
 from tqdm import tqdm
 import openturns as ot
 from numpy import concatenate
-from openturns.func import _exec_sample_multiprocessing_func_sample
+
 
 
 class SubmitItFunction(ot.OpenTURNSPythonFunction):
@@ -80,8 +80,6 @@ class SubmitItFunction(ot.OpenTURNSPythonFunction):
         ]
 
         # Submit multiple jobs
-        if self.tasks_per_job > 1: 
-            self.callable = _exec_sample_multiprocessing_func_sample(self.callable, self.cpus_per_job)
         jobs = [
             self.executor.submit(self.callable, subsample) for subsample in subsamples
         ]
