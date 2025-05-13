@@ -51,6 +51,8 @@ The requirements for this example include:
 
 - Input design of experiments to be evaluated (here, `input_doe/doe.csv`).
 
+- Output folder for my results (here, `my_results`)
+
 In the case of the cantilever beam, this is its content:
   ```
     ├── cantilever_beam
@@ -59,6 +61,77 @@ In the case of the cantilever beam, this is its content:
     |   ├── template
     |   |    ├── beam.exe
     |   |    ├── beam_input_template.xml
+    |   ├── my_results 
   ```
 
- ## 3- How to use `othpc`?
+## 3- How to run an `othpc` script?
+
+
+A- Define the simulation model 
+  ```Python
+  import os
+  import othpc
+  import openturns as ot
+  from cantilever_beam import CantileverBeam
+
+  input_template_file = "template/beam_input_template.xml"
+  executable_file = "template/beam"
+  my_results_directory = "my_results"
+  cb = CantileverBeam(input_template_file, executable_file, my_results_directory, n_cpus=2)
+  ```
+  Note that the argument `n_cpus` is set here to 2 (by default `n_cpus=1`). 
+  Therefore, the evaluation of a sample of input points is distributed by `multiprocessing` on 2 CPUs.  
+
+
+B- Define an OpenTURNS function distributing its evaluations
+  ```Python
+  dw = othpc.SubmitItFunction(cb, tasks_per_job=2, cpus_per_job=2, timeout_per_job=5)
+  dwfun = ot.Function(dw)
+  ```
+  As the evaluations of the `CantileverBeam` class are distributed over 2 CPUs here (see remark above), 
+  two evaluation are done per SLURM job. 
+
+C- Define input design of experiments with size `N=10` and evaluate it on the HPC
+  ```Python
+  X = ot.Sample.ImportFromCSVFile("input_doe/doe.csv", ",")
+  Y = dwfun(X)
+  print(Y)
+  ```
+
+D- Create a summary table gathering inputs and corresponding evaluated outputs 
+  ```Python
+  othpc.make_summary_file("my_results", summary_file="summary_table.csv")
+  ```
+
+## 3- Resulting file tree
+
+  After running the previous Python script, one gets the following file-tree results. 
+  In the folder `my_results`, 10 subfolders have been created with a unique hash, corresponding to each evaluation. 
+  In the `logs` folder, 5 subfolders were created, corresponding to all the SLURM jobs submitted (since the argument `tasks_per_job=2` here). 
+
+  ```
+    ├── cantilever_beam
+    |   ├── input_doe
+    |   |    ├── doe.csv 
+    |   ├── template
+    |   |    ├── beam.exe
+    |   |    ├── beam_input_template.xml
+    |   ├── logs
+    |   │   ├── 54474902
+    |   │   ├── 54474903
+    |   │   ├── 54474904
+    |   │   ├── 54474906
+    |   │   └── 54474907
+    |   ├── my_results
+    |   │   ├── simu_2025-05-13_17-37_69us6w9c
+    |   │   ├── simu_2025-05-13_17-37_71krv2ic
+    |   │   ├── simu_2025-05-13_17-37_ejk7pqsl
+    |   │   ├── simu_2025-05-13_17-37_p4jyjbp2
+    |   │   ├── simu_2025-05-13_17-37_t687ohjt
+    |   │   ├── simu_2025-05-13_17-37_xv_pbjmo
+    |   │   ├── simu_2025-05-13_17-38_0ueo2xry
+    |   │   ├── simu_2025-05-13_17-38_95e6rhvd
+    |   │   ├── simu_2025-05-13_17-38_q0czcyr3
+    |   │   ├── simu_2025-05-13_17-38_qombpgv0
+    |   │   └── summary_table.csv
+  ```

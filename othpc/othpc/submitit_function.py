@@ -15,7 +15,37 @@ from numpy import concatenate
 
 class SubmitItFunction(ot.OpenTURNSPythonFunction):
     """
-    TBD
+    The aim of this class is to ease the realization of parallel evaluations of a numerical simulation model in a HPC environment. 
+    This class gives an example of a HPC wrapper for an executable numerical model using the Python package submitit (see https://github.com/facebookincubator/submitit/tree/main).
+
+    Parameters
+    ----------
+    callable : openturns.Function
+        The unit function for which can either be sequential (a unit evaulation only requires one CPU), 
+        multi-cores or multi-nodes (a unit evaluation requires multiple cores and possibly multiple nodes). 
+    tasks_per_job : integer
+        Defines the number of tasks (or evaluations of the numerical simulation model) realized in each single SLURM jobs.
+    nodes_per_job : integer
+        Defines the number of HPC nodes requested per SLURM job submitted.
+    cpus_per_job : integer
+        Defines the number of CPUs requested per SLURM job submitted.
+    timeout_per_job : integer
+        Defines the timeout requested (in minutes) per SLURM job.
+    memory_per_job : integer
+        Defines the memory (in MB) requested per SLURM job.
+    slurm_wckey : string
+        Only for EDF clusters. Defines the identification key of a project. To check the current wckeys, use the bash command "cce_wckeys".
+
+    Examples
+    --------
+    >>> import othpc
+    >>> import openturns as ot
+    >>> from cantilever_beam import CantileverBeam
+
+    >>> cb = CantileverBeam("template/beam_input_template.xml", "template/beam", "my_results")
+    >>> slurm_cb = othpc.SubmitItFunction(cb)
+    >>> X = ot.Sample.ImportFromCSVFile("input_doe/doe.csv", ",")
+    >>> Y = slurm_cb(X)
     """
 
     def __init__(
@@ -27,8 +57,6 @@ class SubmitItFunction(ot.OpenTURNSPythonFunction):
         timeout_per_job=5,
         memory_per_job=512,
         slurm_wckey="P120K:SALOME",
-        slurm_extra_options=["--output=logs/output.log", "--error=logs/error.log"],
-        verbose=False,
     ):
         super().__init__(callable.getInputDimension(), callable.getOutputDimension())
         self.setInputDescription(callable.getInputDescription())
@@ -38,7 +66,6 @@ class SubmitItFunction(ot.OpenTURNSPythonFunction):
         self.cpus_per_job = cpus_per_job
         self.timeout_per_job = timeout_per_job
         self.memory_per_job = memory_per_job
-        self.slurm_extra_options = slurm_extra_options
         self.slurm_wckey = slurm_wckey
         self.callable = callable
 
@@ -50,29 +77,17 @@ class SubmitItFunction(ot.OpenTURNSPythonFunction):
             timeout_min=timeout_per_job,
             slurm_wckey=slurm_wckey,
         )
-        
-
-        if verbose:
-            print(
-                "** Requested ressources **\n"
-                "**************************\n"
-                f"+ cpus_per_job------{self.cpus_per_job}\n"
-                f"+ timeout_per_job---{self.timeout_per_job} minutes\n"
-                f"+ memory_per_job----{self.memory_per_job} MB\n"
-            )
-        # print(self.callable_file)
 
     def _exec_sample(self, X):
         # Divide input points across jobs (e.g. create batches)
         X = ot.Sample(X)
         X.setDescription(
             self.getInputDescription()
-        )  # for accurate prints in print_and_call
-        # tasks_per_job = len(X) // self.job_number
+        )
         job_number = len(X) // self.tasks_per_job
         if (
             len(X) % self.tasks_per_job
-        ):  # if the input size is not divisible by the number of tasks per job
+        ):
             job_number += 1  # an additional job is needed
         subsamples = [
             X[self.tasks_per_job * i : self.tasks_per_job * (i + 1)]
@@ -92,7 +107,7 @@ class SubmitItFunction(ot.OpenTURNSPythonFunction):
                     if not completed[i] and job.done():
                         completed[i] = True
                         pbar.update(1)
-                time.sleep(1)  # Avoid spamming the scheduler
+                time.sleep(1)  # Avoids spamming the scheduler
 
         # Return outputs
         result = ot.Sample(concatenate([job.result() for job in jobs], axis=0))

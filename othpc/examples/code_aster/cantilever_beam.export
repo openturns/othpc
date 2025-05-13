@@ -1,0 +1,17 @@
+P actions make_etude
+P memjob 10240000
+P memory_limit 10000.0
+P mode interactif
+P mpi_nbcpu 1
+P mpi_nbnoeud 1
+P ncpus 1
+P rep_trav /fscronos/scratch/users/g88077/g88077-crfront5-interactif_46706/global/global/global/global/global/global
+P time_limit 6000.0
+P tpsjob 101
+P version 16.5
+A memjeveux 1250.0
+A tpmax 6000.0
+F comm /fscronos/scratch/users/g88077/uqot/hpc-phimeca/othpc/examples/code_aster/RunCase_1_beam.comm D  1
+F mail /fscronos/scratch/users/g88077/uqot/hpc-phimeca/othpc/examples/code_aster/_ExportedFromSalomeObject_0_1_2_3.med D  3
+F resu /fscronos/scratch/users/g88077/uqot/hpc-phimeca/othpc/examples/code_aster/output_displacement_field.rmed R  4
+F mess /fscronos/scratch/users/g88077/uqot/hpc-phimeca/othpc/examples/code_aster/output.mess R  6

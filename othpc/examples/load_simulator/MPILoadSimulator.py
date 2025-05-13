@@ -15,7 +15,7 @@ class MPILoadSimulator(ot.OpenTURNSPythonFunction):
     """
     TBD
     """
-    def __init__(self, executable_file="./bin/myMPIProgram", nb_mpi_proc=10, simu_duration=10, results_directory="my_results"):
+    def __init__(self, executable_file="./bin/myMPIProgram", nb_mpi_proc=10, simu_duration=10, nb_slurm_nodes=1, slurm_timeout=5, results_directory="my_results"):
         super().__init__(2, 1)
         #
         if not os.path.isfile(executable_file):
@@ -26,7 +26,9 @@ class MPILoadSimulator(ot.OpenTURNSPythonFunction):
             raise ValueError(f"The working directory {results_directory} does not exist.")
         self.results_directory = os.path.abspath(results_directory)
         self.nb_mpi_proc = nb_mpi_proc
+        self.nb_slurm_nodes = nb_slurm_nodes
         self.simu_duration = simu_duration
+        self.slurm_timeout = slurm_timeout
 
     def _parse_output(self, simulation_directory):
         """
@@ -60,11 +62,10 @@ class MPILoadSimulator(ot.OpenTURNSPythonFunction):
         with othpc.TempSimuDir(res_dir=self.results_directory) as simu_dir:
             # Execution
             try: 
-                otct.execute(f"salloc --nodes=2 --ntasks-per-node={self.nb_mpi_proc//2} --time=5 --wckey=P120K:SALOME mpiexec -n {self.nb_mpi_proc} {self.executable_file} {x[0]} {x[1]} --cpu-interval={self.simu_duration}", shell=True, cwd=simu_dir)
+                otct.execute(f"salloc --nodes={self.nb_slurm_nodes} --ntasks-per-node={self.nb_mpi_proc//self.nb_slurm_nodes} --time={self.slurm_timeout} --wckey=P120K:SALOME mpiexec -n {self.nb_mpi_proc} {self.executable_file} {x[0]} {x[1]} --cpu-interval={self.simu_duration}", shell=True, cwd=simu_dir)
                 print("SBATCH DONE")
                 # Parse outputs
                 y = self._parse_output(simu_dir)
-                # y = 0.
             except CalledProcessError as error:
                 # othpc.evaluation_error_log(error, simu_dir, "CantileverBeam_RuntimeError.txt")
                 y = float("nan")
