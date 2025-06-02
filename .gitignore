@@ -20,4 +20,4 @@
 *__pycache__*
 .vscode
 *othpc.egg-info*
-othpc/examples/cathare_bethsy/*
+# othpc/examples/cathare_bethsy/*

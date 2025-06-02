@@ -13,7 +13,6 @@ import othpc
 from subprocess import CalledProcessError
 from xml.dom import minidom
 from othpc.utils import fake_load
-# from dask.distributed import print
 from multiprocessing import Pool
 
 
@@ -33,7 +32,7 @@ class CantileverBeam(ot.OpenTURNSPythonFunction):
         TBD
     """
 
-    def __init__(self, input_template_file, executable_file, results_directory , n_cpus=1):
+    def __init__(self, input_template_file, executable_file, results_directory, n_cpus=1):
         super().__init__(4, 1)
         self.setInputDescription(["F", "E", "L", "I"])
         self.setOutputDescription(["Y"])
