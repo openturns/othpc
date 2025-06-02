@@ -12,17 +12,16 @@ import openturns as ot
 from numpy import concatenate
 
 
-
 class SubmitItFunction(ot.OpenTURNSPythonFunction):
     """
-    The aim of this class is to ease the realization of parallel evaluations of a numerical simulation model in a HPC environment. 
+    The aim of this class is to ease the realization of parallel evaluations of a numerical simulation model in a HPC environment.
     This class gives an example of a HPC wrapper for an executable numerical model using the Python package submitit (see https://github.com/facebookincubator/submitit/tree/main).
 
     Parameters
     ----------
     callable : openturns.Function
-        The unit function for which can either be sequential (a unit evaulation only requires one CPU), 
-        multi-cores or multi-nodes (a unit evaluation requires multiple cores and possibly multiple nodes). 
+        The unit function for which can either be sequential (a unit evaulation only requires one CPU),
+        multi-cores or multi-nodes (a unit evaluation requires multiple cores and possibly multiple nodes).
     tasks_per_job : integer
         Defines the number of tasks (or evaluations of the numerical simulation model) realized in each single SLURM jobs.
     nodes_per_job : integer
@@ -78,16 +77,15 @@ class SubmitItFunction(ot.OpenTURNSPythonFunction):
             slurm_wckey=slurm_wckey,
         )
 
+    def _exec(self, X):
+        return self._exec_point_on_exec_sample(X)
+
     def _exec_sample(self, X):
         # Divide input points across jobs (e.g. create batches)
         X = ot.Sample(X)
-        X.setDescription(
-            self.getInputDescription()
-        )
+        X.setDescription(self.getInputDescription())
         job_number = len(X) // self.tasks_per_job
-        if (
-            len(X) % self.tasks_per_job
-        ):
+        if len(X) % self.tasks_per_job:
             job_number += 1  # an additional job is needed
         subsamples = [
             X[self.tasks_per_job * i : self.tasks_per_job * (i + 1)]
