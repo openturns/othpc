@@ -1,6 +1,5 @@
 """othpc module."""
 
-from .dask_function import DaskFunction
 from .jobarray_function import JobArrayFunction
 from .submitit_function import SubmitItFunction
 from .utils import (
