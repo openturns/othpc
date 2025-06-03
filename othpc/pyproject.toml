@@ -1,0 +1,25 @@
+[build-system]
+requires = ["setuptools"]
+
+[project]
+name = "othpc"
+version = "0.1"
+description = "Simplifies the evaluation of numerical simulation models on high performance computing facilities"
+readme = "README.md"
+dependencies = [ "numpydoc", "sphinx_gallery", "sphinx", "submitit", "openturns", "tqdm", "pandas"]
+authors = [
+  {name = "Elias Fekhari"},
+  {name = "Joseph Muré"},
+  {name = "Michaël Baudin"},
+]
+license = "LGPL-3.0-or-later"
+classifiers = [
+  "Environment :: Console",
+  "Intended Audience :: Science/Research",
+  "Intended Audience :: Developers",
+  "Natural Language :: English",
+  "Programming Language :: Python :: 3",
+  "Topic :: Software Development",
+  "Topic :: Scientific/Engineering",
+]
+
