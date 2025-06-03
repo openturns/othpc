@@ -22,42 +22,38 @@ class CantileverBeam(ot.OpenTURNSPythonFunction):
 
     Parameters:
     ----------
-    input_template_file : str
-        This input file has been modified with tags replacing the numerical values of the input variables.
-
-    executable_file : str
-        TBD
-
     results_directory : str
         TBD
     """
 
-    def __init__(self, input_template_file, executable_file, results_directory, n_cpus=1):
+    def __init__(self, results_directory, n_cpus=1):
         super().__init__(4, 1)
         self.setInputDescription(["F", "E", "L", "I"])
         self.setOutputDescription(["Y"])
         #
+        template_dir = os.path.join(os.path.dirname(__file__), "template")
+        input_template_file = os.path.join(template_dir, "beam_input_template.xml")
         if not os.path.isfile(input_template_file):
             raise ValueError(
                 f"The input template {input_template_file} file does not exist."
             )
-        self.input_template_file = os.path.abspath(input_template_file)
+        self.input_template_file = input_template_file
         #
-        license_file = os.path.join(
-            os.path.dirname(self.input_template_file), "LICENCE.xml"
-        )
+        license_file = os.path.join(template_dir, "LICENCE.xml")
         if not os.path.isfile(license_file):
             raise ValueError(f"The license file {license_file} does not exist.")
         self.license_file = license_file
+        executable_file = os.path.join(template_dir, "beam")
         if not os.path.isfile(executable_file):
             raise ValueError(f"The executable {executable_file} does not exist.")
-        self.executable_file = os.path.abspath(executable_file)
+        self.executable_file = executable_file
         #
-        if not os.path.exists(results_directory):
-            raise ValueError(
-                f"The working directory {results_directory} does not exist."
-            )
-        self.results_directory = os.path.abspath(results_directory)
+        results_directory = os.path.abspath(results_directory)
+        try:
+            os.mkdir(results_directory)
+        except FileExistsError:
+            pass
+        self.results_directory = results_directory
         self.n_cpus = n_cpus
         
 
@@ -144,9 +140,3 @@ class CantileverBeam(ot.OpenTURNSPythonFunction):
             outputs = p.map(self._exec, X)
         return outputs
 
-
-if __name__ == "__main__":
-    g = CantileverBeam()
-    X = [[1, 2, 3, 4]]
-    Y = g(X)
-    print(Y)
