@@ -15,9 +15,10 @@ class MPILoadSimulator(ot.OpenTURNSPythonFunction):
     """
     TBD
     """
-    def __init__(self, executable_file="./bin/myMPIProgram", nb_mpi_proc=10, simu_duration=10, nb_slurm_nodes=1, slurm_timeout=5, results_directory="my_results"):
+    def __init__(self, nb_mpi_proc=10, simu_duration=10, nb_slurm_nodes=1, slurm_timeout=5, results_directory="my_results"):
         super().__init__(2, 1)
         #
+        executable_file = os.path.join(os.path.dirname(__file__), "bin", "myMPIProgram")
         if not os.path.isfile(executable_file):
             raise ValueError(f"The executable {executable_file} does not exist.")
         self.executable_file = os.path.abspath(executable_file)
@@ -73,9 +74,3 @@ class MPILoadSimulator(ot.OpenTURNSPythonFunction):
             # othpc.make_report_file(simu_dir, x, [y])
         return [y]
 
-
-if __name__ == "__main__":
-    g = MPILoadSimulator()
-    X = [[1, 2], [3, 4]]
-    Y = g(X)
-    print(Y)
