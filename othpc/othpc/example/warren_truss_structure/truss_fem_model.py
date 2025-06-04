@@ -103,17 +103,3 @@ def warren_truss_displacement(X):
     max_disp = np.max(magnitudes)
     max_node = np.argmax(magnitudes)
     return [displacements[3][1]] #displacement at central node
-
-if __name__ == "__main__":
-    # Material and section properties
-    E = 210e9      # Young's modulus (Pa)
-    A = 0.01       # Cross-sectional area (m^2)
-    P = -2000  # uniform load applied uniformally per node (in N, downward)
-    print(f"Max displacement: {warren_truss_displacement([E, A, P])} (m)")
-
-    # # Output
-    # print("Max displacement: {:.6e} m at node {}".format(max_disp, max_node))
-    # print("Displacement at node {}: {}".format(max_node, displacemenents[max_node]))
-
-    # plot_truss_structure(nodes, elements, displacemenents, reactions, uniform_load,
-    #                      bottom_nodes=list(range(7)), support_nodes=[0, 6])
