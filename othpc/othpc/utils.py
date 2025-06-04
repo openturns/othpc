@@ -15,6 +15,7 @@ import time
 import math
 import logging
 import subprocess
+
 # from dask.distributed import print
 
 
@@ -165,17 +166,17 @@ def load_cache(function, summary_file):
 
 def evaluation_error_log(error, simulation_directory, name="evaluation_error.txt"):
     """
-    Creates error logs for a given simulation directory. 
+    Creates error logs for a given simulation directory.
 
     Parameters
     ----------
     error : Error
-        Error message to be logged. 
+        Error message to be logged.
 
     simulation_directory : string
         Path where the inputs and outputs files associated to one evaluation are stored.
     name : string
-        Label of the error file storing the collected logs. 
+        Label of the error file storing the collected logs.
     """
     logger = logging.getLogger(__name__)
     logfile = os.path.join(simulation_directory, name)
@@ -194,14 +195,13 @@ def evaluation_error_log(error, simulation_directory, name="evaluation_error.txt
 
 def fake_load(duration=30):
     """
-    Creates a fake compational load to keep the CPUs active while testing the package. 
-    
+    Creates a fake compational load to keep the CPUs active while testing the package.
+
     Parameters
     ----------
     duration : integer
-        Duration in seconds for which the fake load is created. 
+        Duration in seconds for which the fake load is created.
     """
     start = time.time()
     while time.time() - start < duration:
         a = math.sqrt(64 * 64 * 64 * 64 * 64)
-
