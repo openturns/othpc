@@ -32,4 +32,4 @@ jobs:
           git add -A .
           if test `git diff HEAD | wc -c` -eq 0; then exit 0; fi
           git commit -a -m "GitHub Actions build ${GITHUB_REPOSITORY} ${GITHUB_RUN_ID}"
-          git push --quiet origin main > /dev/null 2>&1
+          git push --quiet origin master > /dev/null 2>&1
