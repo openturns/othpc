@@ -10,7 +10,7 @@ import openturns as ot
 from MPILoadSimulator import MPILoadSimulator
 
 cb = MPILoadSimulator(nb_mpi_proc=10, nb_slurm_nodes=2, simu_duration=2)
-dw = othpc.SubmitItFunction(cb, tasks_per_job=1, cpus_per_job=1, timeout_per_job=10)
+dw = othpc.SubmitFunction(cb, tasks_per_job=1, cpus_per_job=1, timeout_per_job=10)
 dwfun = ot.Function(dw)
 X = ot.Sample.ImportFromCSVFile("input_doe/doe_small.csv", ",")
 Y = dwfun(X[:3])

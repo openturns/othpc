@@ -1,7 +1,6 @@
 """othpc module."""
 
-from .jobarray_function import JobArrayFunction
-from .submitit_function import SubmitItFunction
+from .submit_function import SubmitFunction
 from .utils import (
     TempSimuDir,
     make_report_file,
@@ -28,7 +27,7 @@ if Version(_ot.__version__) < Version("1.25"):
 __all__ = [
     "DaskFunction",
     "JobArrayFunction",
-    "SubmitItFunction",
+    "SubmitFunction",
     "TempSimuDir",
     "make_report_file",
     "make_summary_file",

@@ -85,7 +85,7 @@ A- Define the simulation model
 
 B- Define an OpenTURNS function distributing its evaluations
   ```Python
-  dw = othpc.SubmitItFunction(cb, tasks_per_job=2, cpus_per_job=2, timeout_per_job=5)
+  dw = othpc.SubmitFunction(cb, tasks_per_job=2, cpus_per_job=2, timeout_per_job=5)
   dwfun = ot.Function(dw)
   ```
   As the evaluations of the `CantileverBeam` class are distributed over 2 CPUs here (see remark above), 

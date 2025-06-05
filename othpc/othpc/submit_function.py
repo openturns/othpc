@@ -12,7 +12,7 @@ import openturns as ot
 from numpy import concatenate
 
 
-class SubmitItFunction(ot.OpenTURNSPythonFunction):
+class SubmitFunction(ot.OpenTURNSPythonFunction):
     """
     The aim of this class is to ease the realization of parallel evaluations of a numerical simulation model in a HPC environment.
     This class gives an example of a HPC wrapper for an executable numerical model using the Python package submitit (see https://github.com/facebookincubator/submitit/tree/main).
@@ -42,7 +42,7 @@ class SubmitItFunction(ot.OpenTURNSPythonFunction):
     >>> from cantilever_beam import CantileverBeam
 
     >>> cb = CantileverBeam("template/beam_input_template.xml", "template/beam", "my_results")
-    >>> slurm_cb = othpc.SubmitItFunction(cb)
+    >>> slurm_cb = othpc.SubmitFunction(cb)
     >>> X = ot.Sample.ImportFromCSVFile("input_doe/doe.csv", ",")
     >>> Y = slurm_cb(X)
     """
