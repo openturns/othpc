@@ -25,8 +25,6 @@ if Version(_ot.__version__) < Version("1.25"):
     _OTCalledProcessError.__str__ = _OTCalledProcessError_str
 
 __all__ = [
-    "DaskFunction",
-    "JobArrayFunction",
     "SubmitFunction",
     "TempSimuDir",
     "make_report_file",

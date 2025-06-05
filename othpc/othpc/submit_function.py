@@ -39,11 +39,11 @@ class SubmitFunction(ot.OpenTURNSPythonFunction):
     --------
     >>> import othpc
     >>> import openturns as ot
-    >>> from cantilever_beam import CantileverBeam
+    >>> from othpc.example import CantileverBeam
 
-    >>> cb = CantileverBeam("template/beam_input_template.xml", "template/beam", "my_results")
+    >>> cb = CantileverBeam("my_results")
     >>> slurm_cb = othpc.SubmitFunction(cb)
-    >>> X = ot.Sample.ImportFromCSVFile("input_doe/doe.csv", ",")
+    >>> X = [[30e3, 28e6, 250.0, 400.0], [20e3, 35e6, 250.0, 400.0]]
     >>> Y = slurm_cb(X)
     """
 
