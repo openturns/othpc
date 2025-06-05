@@ -15,25 +15,25 @@ from numpy import concatenate
 class SubmitFunction(ot.OpenTURNSPythonFunction):
     """
     The aim of this class is to ease the realization of parallel evaluations of a numerical simulation model in a HPC environment.
-    This class gives an example of a HPC wrapper for an executable numerical model using the Python package submitit (see https://github.com/facebookincubator/submitit/tree/main).
+    This class gives an example of a HPC wrapper for an executable numerical model using the Python package submitit (see https://github.com/facebookincubator/submitit).
 
     Parameters
     ----------
     callable : openturns.Function
         The unit function for which can either be sequential (a unit evaulation only requires one CPU),
         multi-cores or multi-nodes (a unit evaluation requires multiple cores and possibly multiple nodes).
-    tasks_per_job : integer
+    tasks_per_job : int
         Defines the number of tasks (or evaluations of the numerical simulation model) realized in each single SLURM jobs.
-    nodes_per_job : integer
+    nodes_per_job : int
         Defines the number of HPC nodes requested per SLURM job submitted.
-    cpus_per_job : integer
+    cpus_per_job : int
         Defines the number of CPUs requested per SLURM job submitted.
-    timeout_per_job : integer
+    timeout_per_job : int
         Defines the timeout requested (in minutes) per SLURM job.
-    memory_per_job : integer
+    memory_per_job : int
         Defines the memory (in MB) requested per SLURM job.
-    slurm_wckey : string
-        Only for EDF clusters. Defines the identification key of a project. To check the current wckeys, use the bash command "cce_wckeys".
+    slurm_wckey : str
+        Only for clusters that require a WCKEY (EDF clusters for example), i.e. a project identification key. To check the current wckeys, use the bash command "cce_wckeys".
 
     Examples
     --------
