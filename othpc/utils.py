@@ -78,15 +78,15 @@ def make_report_file(
     ----------
     simu_dir : str
         Path where the inputs and outputs files associated to one evaluation are stored.
-    x : list
+    x : list of float
         Input vector evaluated.
-    y : list
+    y : list of float
         Corresponding output vector.
     report_file : str
         Name of the output file written.
-    input_description : list
+    input_description : list of str
         List of strings describing the intputs.
-    output_description :
+    output_description : list of str
         List of strings describing the outputs.
     """
     if input_description is None:

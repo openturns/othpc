@@ -23,3 +23,5 @@ classifiers = [
   "Topic :: Scientific/Engineering",
 ]
 
+[tool.setuptools]
+packages = ["othpc"]

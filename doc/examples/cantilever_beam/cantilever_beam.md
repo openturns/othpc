@@ -3,18 +3,19 @@
 The simple example of the cantilever beam allows us to illustrate how to use the `OpenTURNSWrapper` class. This example is based on a quick numerical model, which was proposed in the documentation of an OpenTURNS module (see https://openturns.github.io/otwrapy/master/beam_wrapper.html).
 
 In this case, the numerical model is an executable that computes the deviation of a beam under bending stress according to the following expression:  
-$$
-y = \frac{FL^3}{3EI} ,
-$$
+```{math}
+y = \frac{FL^3}{3EI}
+```
 where E is the Young modulus (Pa),
 F is the Loading (N),
 L is the Length of beam (m)
 and I is the Moment of inertia (m^4).
 
-<p align="center">
-  <img src=beam.png width="20%" />
-</p>
-
+```{image} beam.png
+:class: bg-primary
+:width: 400px
+:align: center
+```
 
 To evaluate this numerical model, one can run the following shell command: 
 ```
@@ -40,7 +41,7 @@ where `beam_input.xml` is the input file containing the four parameter. Note tha
   (myenv) [NNI-crfront1-pts48] ~$ cd /scratch/users/{NNI}/hpc-phimeca/othpc/
   (myenv) [NNI-crfront1-pts48] ~$ pip install -e .
   ```
-  
+
 ## 2- Files required for the cantilever beam  
 
 The requirements for this example include:
@@ -53,15 +54,15 @@ The requirements for this example include:
 
 - Output folder for my results (here, `my_results`)
 
-In the case of the cantilever beam, this is its content:
+  In the case of the cantilever beam, this is its content:
   ```
-    ├── cantilever_beam
-    |   ├── input_doe
-    |   |    ├── doe.csv 
-    |   ├── template
-    |   |    ├── beam.exe
-    |   |    ├── beam_input_template.xml
-    |   ├── my_results 
+  ├── cantilever_beam
+  |   ├── input_doe
+  |   |    ├── doe.csv 
+  |   ├── template
+  |   |    ├── beam.exe
+  |   |    ├── beam_input_template.xml
+  |   ├── my_results 
   ```
 
 ## 3- How to run an `othpc` script?
@@ -84,12 +85,13 @@ A- Define the simulation model
 
 
 B- Define an OpenTURNS function distributing its evaluations
-  ```Python
-  dw = othpc.SubmitFunction(cb, tasks_per_job=2, cpus_per_job=2, timeout_per_job=5)
-  dwfun = ot.Function(dw)
-  ```
-  As the evaluations of the `CantileverBeam` class are distributed over 2 CPUs here (see remark above), 
-  two evaluation are done per SLURM job. 
+
+```Python
+dw = othpc.SubmitFunction(cb, tasks_per_job=2, cpus_per_job=2, timeout_per_job=5)
+dwfun = ot.Function(dw)
+```
+As the evaluations of the `CantileverBeam` class are distributed over 2 CPUs here (see remark above), 
+two evaluation are done per SLURM job. 
 
 C- Define input design of experiments with size `N=10` and evaluate it on the HPC
   ```Python

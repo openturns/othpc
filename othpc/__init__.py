@@ -7,6 +7,7 @@ from .utils import (
     make_summary_file,
     evaluation_error_log,
     load_cache,
+    fake_load,
 )
 
 # To circumvent a bug in OpenTURNS 1.24
@@ -31,5 +32,6 @@ __all__ = [
     "make_summary_file",
     "evaluation_error_log",
     "load_cache",
+    "fake_load",
 ]
-__version__ = "0.0.1"
+__version__ = "0.1"
