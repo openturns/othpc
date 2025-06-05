@@ -11,6 +11,7 @@ jobs:
       - uses: conda-incubator/setup-miniconda@v3
         with:
           miniforge-version: latest
+          conda-remove-defaults: "true"
       - name: Build
         shell: bash -l {0}
         run: |
