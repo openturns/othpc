@@ -1,0 +1,34 @@
+name: Build
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+jobs:
+  conda-linux:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: conda-incubator/setup-miniconda@v3
+        with:
+          miniforge-version: latest
+      - name: Build
+        shell: bash -l {0}
+        run: |
+          conda install -y setuptools openturns submitit pandas flake8 sphinx sphinx_rtd_theme pandoc
+          flake8 --max-line-length=120
+          pip install .
+      - name: Upload
+        if: ${{ github.ref == 'refs/heads/master' }}
+        run: |
+          exit
+          git clone --depth 1 https://${{ secrets.GH_TOKEN }}@github.com/openturns/openturns.github.io.git /tmp/io
+          mkdir -p /tmp/io/sphinx/othpc/master
+          cp -r doc/_build/html/* /tmp/io/sphinx/othpc/master
+          cd /tmp/io
+          touch .nojekyll
+          git config user.email "support@gh.com"
+          git config user.name "GitHub Actions"
+          git add -A .
+          if test `git diff HEAD | wc -c` -eq 0; then exit 0; fi
+          git commit -a -m "GitHub Actions build ${GITHUB_REPOSITORY} ${GITHUB_RUN_ID}"
+          git push --quiet origin main > /dev/null 2>&1
