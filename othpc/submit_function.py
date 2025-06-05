@@ -15,11 +15,11 @@ from numpy import concatenate
 class SubmitFunction(ot.OpenTURNSPythonFunction):
     """
     The aim of this class is to ease the realization of parallel evaluations of a numerical simulation model in a HPC environment.
-    This class gives an example of a HPC wrapper for an executable numerical model using the Python package submitit (see https://github.com/facebookincubator/submitit).
+    This class gives an example of a HPC wrapper for an executable numerical model using the Python package `submitit <https://github.com/facebookincubator/submitit>`_.
 
     Parameters
     ----------
-    callable : openturns.Function
+    callable : :py:class:`openturns.Function`
         The unit function for which can either be sequential (a unit evaulation only requires one CPU),
         multi-cores or multi-nodes (a unit evaluation requires multiple cores and possibly multiple nodes).
     tasks_per_job : int
