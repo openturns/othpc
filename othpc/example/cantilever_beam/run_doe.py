@@ -10,9 +10,12 @@ import openturns as ot
 from othpc.example import CantileverBeam
 
 my_results_directory = "my_results"
-cb = CantileverBeam(my_results_directory, n_cpus=2)
+evals_per_job = 2
+cb = CantileverBeam(my_results_directory, n_cpus=evals_per_job)
 
-sf = othpc.SubmitFunction(cb, evals_per_jobs=2, cpus_per_job=2, timeout_per_job=5)
+sf = othpc.SubmitFunction(
+    cb, tasks_per_job=evals_per_job, cpus_per_job=evals_per_job, timeout_per_job=5
+)
 f = ot.Function(sf)
 #
 X = ot.Sample.ImportFromCSVFile("input_doe/doe.csv", ",")

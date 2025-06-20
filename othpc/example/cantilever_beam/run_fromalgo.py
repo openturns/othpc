@@ -7,13 +7,15 @@ Copyright (C) EDF 2025
 """
 import othpc
 import openturns as ot
-from cantilever_beam import CantileverBeam
+from othpc.example import CantileverBeam
 from openturns.usecases import cantilever_beam
 
 my_results_directory = "my_results_algorithm"
-cpus_per_jobs = 2
-cb = CantileverBeam(my_results_directory, n_cpus=cpus_per_jobs)
-sf = othpc.SubmitFunction(cb, evals_per_jobs=cpus_per_jobs, cpus_per_job=cpus_per_jobs, timeout_per_job=5)
+evals_per_job = 2
+cb = CantileverBeam(my_results_directory, n_cpus=evals_per_job)
+sf = othpc.SubmitFunction(
+    cb, tasks_per_job=evals_per_job, cpus_per_job=evals_per_job, timeout_per_job=5
+)
 f = ot.Function(sf)
 
 # Load distributions from the OpenTURNS CantileverBeam example
@@ -25,7 +27,7 @@ Yvect = ot.CompositeRandomVector(f, vect)
 # Build ExpectedSimulationAlgorithm
 algo = ot.ExpectationSimulationAlgorithm(Yvect)
 algo.setMaximumOuterSampling(3)
-algo.setBlockSize(cpus_per_jobs)
+algo.setBlockSize(evals_per_job)
 algo.setMaximumCoefficientOfVariation(-1.0)
 algo.run()
 result = algo.getResult()

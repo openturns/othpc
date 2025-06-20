@@ -140,12 +140,12 @@ class CantileverBeam(ot.OpenTURNSPythonFunction):
 
     def _exec_sample(self, X):
         """
-        Executes several evaluations of the black-box model for the sample X. 
+        Executes a set of evaluations of the black-box model.
 
         Parameters
         ----------
         X : ot.Sample
-            Input sample to be evaluated.
+            Input sample to be evaluated in parallel.
         """
         with Pool(processes=self.n_cpus) as p:
             outputs = p.map(self._exec, X)
