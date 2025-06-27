@@ -22,8 +22,11 @@ class CantileverBeam(ot.OpenTURNSPythonFunction):
 
     Parameters:
     ----------
-    results_directory : str
-        TBD
+    results_directory : str 
+        Name of the result directory where the result sub-folders are written. 
+
+    n_cpus : integer
+        Number of parallel evaluations realized by multiprocessing. 
     """
 
     def __init__(self, results_directory, n_cpus=1):
@@ -136,6 +139,14 @@ class CantileverBeam(ot.OpenTURNSPythonFunction):
         return [y]
 
     def _exec_sample(self, X):
+        """
+        Executes several evaluations of the black-box model for the sample X. 
+
+        Parameters
+        ----------
+        X : ot.Sample
+            Input sample to be evaluated.
+        """
         with Pool(processes=self.n_cpus) as p:
             outputs = p.map(self._exec, X)
         return outputs

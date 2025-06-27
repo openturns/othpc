@@ -10,44 +10,78 @@
 
 The Python package allows to apply the Uncertainty Quantification (UQ) methods from OpenTURNS directly on a computationnaly costly numerical model (e.g., FEM or CFD model) deployed on HPC 
 
-### Minimal example
+### Minimal examples
+
+Create a seperate script defining your function, here is an example for a script named `product_function.py`: 
 
 ```Python
-import othpc
+# product_function.py
 import openturns as ot
+from multiprocessing import Pool
 
-def product_function(X):
-    othpc.fake_load(5) # Fake CPU load for 5 sec.
-    return [X[0] * X[1]]
-ot_product = ot.PythonFunction(2, 1, product_function, n_cpus=2)
-othpc_product = othpc.SubmitFunction(ot_product, tasks_per_job=2, cpus_per_job=2, timeout_per_job=5)
+class ProductFunction(ot.OpenTURNSPythonFunction):
+    def __init__(self, n_cpus=1):
+        super().__init__(2, 1)
+        self.n_cpus = n_cpus
+
+    def _exec(self, x):
+        return [x[0] * x[1]]
+
+    def _exec_sample(self, X):
+        with Pool(processes=self.n_cpus) as p:
+            return p.map(self._exec, X)
+```
+
+Write a launching script as follows:
+```Python
+import othpc
+import openturns as ot 
+from product_function import ProductFunction
+
+ot_product = ProductFunction(n_cpus=3)
+othpc_product = othpc.SubmitFunction(ot_product, tasks_per_job=3, cpus_per_job=3, timeout_per_job=5)
 distribution = ot.JointDistribution([ot.Uniform(0., 1.), ot.Normal(0., 1.)])
-x_sample = distribution.getSample(6) # Monte Carlo sample with size N=6
-y_sample = othpc_product(x_sample) # Submits 3 jobs, each including 2 evaluations 
+x_sample = distribution.getSample(12) # Monte Carlo sample with size N=12
+y_sample = othpc_product(x_sample) # Submits 4 SLURM jobs, each including a batch of 3 evaluations 
 print(y_sample)
 ```
 
 Corresponding output:
-```Shell
-100%|██████████████████████████████████████████████████████████████████████| 3/3 [00:10<00:00,  3.42s/it]
-     [ y0         ]
- 0 : [  0.163549  ]
- 1 : [ -0.0823236 ]
- 2 : [  0.237238  ]
- 3 : [  1.74489   ]
- 4 : [  0.0453774 ]
- 5 : [ -0.0501733 ]
+```
+100%|██████████████████████████████████████████████████████████████████████| 4/4 [00:39<00:00,  9.79s/it]
+     [ y0          ]
+ 0 : [  0.0552903  ]
+ 1 : [ -0.351668   ]
+ 2 : [ -0.0928364  ]
+ 3 : [  0.023483   ]
+ 4 : [ -0.0724111  ]
+ 5 : [  0.33814    ]
+ 6 : [  0.10313    ]
+ 7 : [  0.332978   ]
+ 8 : [  0.0561647  ]
+ 9 : [ -0.00693689 ]
+10 : [  0.735135   ]
+11 : [  0.107765   ]
 ```
 
-The Python function created here should be replaced by a executable numerical model, see e.g., the CantileverBeam example. 
+Beyond this basic example, the `ProductFunction` class created should be replaced by the execution of a numerical model. 
+The `CantileverBeam` example illustrates the use of an executable in this context, and exploits most of the services provided by `othpc`.  
 
-Working with `othpc` gives access to the OpenTURNS UQ methods.
+### Services and utils
+
+Working with `othpc` simplifies the evaluation of costly numerical models and gives access to the OpenTURNS UQ methods.
+Among the services possibly provided by the package: 
+
+- Temporary result directory management.
+- Cache mechanism to avoid repeating evaluations.
+- Compatibility with multi-core or multi-node numerical models.
+- Summary csv table presenting the evaluated inputs with their corresponding outputs.
 
 
 
 ## :floppy_disk: How to install?
 
-The package has not been deployed on a downloading platform yet, to install the current development: 
+The package has not been deployed on a downloading platform yet (e.g., pip and conda), to install the current development: 
 
 ```bash
 git clone https://github.com/openturns/othpc.git
@@ -57,7 +91,8 @@ pip install -e othpc/
 
 ## Documentation
 
-Sphinx documentation : http://openturns.github.io/othpc/main/
+Package documentation : http://openturns.github.io/othpc/main/
+
 
 
 ## Contributors
