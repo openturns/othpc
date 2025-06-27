@@ -15,18 +15,18 @@ cpus_per_jobs = 2
 cb = CantileverBeam(
     my_results_directory, n_cpus=cpus_per_jobs
 )
-dw = othpc.SubmitFunction(
+sf = othpc.SubmitFunction(
     cb, tasks_per_job=cpus_per_jobs, cpus_per_job=cpus_per_jobs, timeout_per_job=5
 )
-dwfun = ot.Function(dw)
+f = ot.Function(sf)
 
 # Load distributions from the OpenTURNS CantileverBeam example
 openturns_example = cantilever_beam.CantileverBeam()
 distribution = openturns_example.distribution
 distribution.setDescription(["E", "F", "L", "I"])
-print(dwfun(distribution.getMean()))
+print(f(distribution.getMean()))
 vect = ot.RandomVector(distribution)
-Yvect = ot.CompositeRandomVector(dwfun, vect)
+Yvect = ot.CompositeRandomVector(f, vect)
 event = ot.ThresholdEvent(Yvect, ot.Greater(), 0.22)
 standard_event = ot.StandardEvent(event)
 standard_function = standard_event.getFunction()

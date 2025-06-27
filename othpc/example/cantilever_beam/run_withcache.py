@@ -5,17 +5,19 @@ Copyright (C) EDF 2025
 
 @authors: Elias Fekhari, Joseph Muré
 """
+import os
 import othpc
+import pandas as pd
 import openturns as ot
-from othpc.example import CantileverBeam
+from cantilever_beam import CantileverBeam
 
 my_results_directory = "my_results"
 cb = CantileverBeam(my_results_directory, n_cpus=2)
-
-dw = othpc.SubmitFunction(cb, tasks_per_job=2, cpus_per_job=2, timeout_per_job=5)
-dwfun = ot.Function(dw)
-#
+sf = othpc.SubmitFunction(cb, tasks_per_job=2, cpus_per_job=2, timeout_per_job=5)
+f = ot.Function(sf)
+memoize_f = othpc.load_cache(
+    f, os.path.join(my_results_directory, "summary_table.csv")
+)
 X = ot.Sample.ImportFromCSVFile("input_doe/doe.csv", ",")
-Y = dwfun(X)
+Y = memoize_f(X)
 print(Y)
-othpc.make_summary_file("my_results", summary_file="summary_table.csv")

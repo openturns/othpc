@@ -10,7 +10,7 @@
 
 The Python package allows to apply the Uncertainty Quantification (UQ) methods from OpenTURNS directly on a computationnaly costly numerical model (e.g., FEM or CFD model) deployed on HPC 
 
-### Minimal examples
+### Minimal example
 
 Create a seperate script defining your function, here is an example for a script named `product_function.py`: 
 
@@ -32,7 +32,7 @@ class ProductFunction(ot.OpenTURNSPythonFunction):
             return p.map(self._exec, X)
 ```
 
-Write a launching script as follows:
+Write the following launching script:
 ```Python
 import othpc
 import openturns as ot 
@@ -46,7 +46,7 @@ y_sample = othpc_product(x_sample) # Submits 4 SLURM jobs, each including a batc
 print(y_sample)
 ```
 
-Corresponding output:
+Here is the corresponding output:
 ```
 100%|██████████████████████████████████████████████████████████████████████| 4/4 [00:39<00:00,  9.79s/it]
      [ y0          ]
@@ -64,7 +64,7 @@ Corresponding output:
 11 : [  0.107765   ]
 ```
 
-Beyond this basic example, the `ProductFunction` class created should be replaced by the execution of a numerical model. 
+Beyond this basic example, the `ProductFunction` class is meant to be replaced by the execution of a numerical model. 
 The `CantileverBeam` example illustrates the use of an executable in this context, and exploits most of the services provided by `othpc`.  
 
 ### Services and utils
