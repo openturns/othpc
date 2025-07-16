@@ -12,7 +12,7 @@ from othpc.example import CantileverBeam
 my_results_directory = "my_results"
 cb = CantileverBeam(my_results_directory, n_cpus=2)
 
-sf = othpc.SubmitFunction(cb, tasks_per_job=2, cpus_per_job=2, timeout_per_job=5)
+sf = othpc.SubmitFunction(cb, evals_per_jobs=2, cpus_per_job=2, timeout_per_job=5)
 f = ot.Function(sf)
 #
 X = ot.Sample.ImportFromCSVFile("input_doe/doe.csv", ",")

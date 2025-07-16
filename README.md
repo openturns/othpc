@@ -39,7 +39,7 @@ import openturns as ot
 from product_function import ProductFunction
 
 ot_product = ProductFunction(n_cpus=3)
-othpc_product = othpc.SubmitFunction(ot_product, tasks_per_job=3, cpus_per_job=3, timeout_per_job=5)
+othpc_product = othpc.SubmitFunction(ot_product, evals_per_jobs=3, cpus_per_job=3, timeout_per_job=5)
 distribution = ot.JointDistribution([ot.Uniform(0., 1.), ot.Normal(0., 1.)])
 x_sample = distribution.getSample(12) # Monte Carlo sample with size N=12
 y_sample = othpc_product(x_sample) # Submits 4 SLURM jobs, each including a batch of 3 evaluations 

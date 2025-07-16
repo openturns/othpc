@@ -8,7 +8,7 @@ import pytest
 @pytest.fixture
 def model():
     truss_model = ot.PythonFunction(3, 1, warren_truss_displacement)
-    sf = othpc.SubmitFunction(truss_model, tasks_per_job=2, cpus_per_job=2, timeout_per_job=5)
+    sf = othpc.SubmitFunction(truss_model, evals_per_jobs=2, cpus_per_job=2, timeout_per_job=5)
     f = ot.Function(sf)
     return f
 
