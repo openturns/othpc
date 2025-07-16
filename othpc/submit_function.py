@@ -31,9 +31,13 @@ class SubmitFunction(ot.OpenTURNSPythonFunction):
     timeout_per_job : int
         Defines the timeout requested (in minutes) per SLURM job.
     mem : int
-        Defines the memory (in MB) requested per SLURM job.
+        Defines the memory (in MB) requested per node.
     slurm_wckey : str
-        Only for clusters that require a WCKEY (EDF clusters for example), i.e. a project identification key. To check the current wckeys, use the bash command "cce_wckeys".
+        Only for clusters that require a WCKEY (EDF clusters for example), i.e. a project identification key. To check the current wckeys, use the bash command `cce_wckeys`.
+    slurm_additional_parameters : dictionary
+        Extra parameters to pass to SLURM (for example, `{"exclusive": True, "mem_per_gpu": 12}`). 
+        Empty by default.  
+        
 
     Examples
     --------
@@ -56,6 +60,7 @@ class SubmitFunction(ot.OpenTURNSPythonFunction):
         timeout_per_job=5,
         mem=512,
         slurm_wckey="P120K:SALOME",
+        slurm_additional_parameters={}
     ):
         super().__init__(callable.getInputDimension(), callable.getOutputDimension())
         self.setInputDescription(callable.getInputDescription())
@@ -75,6 +80,7 @@ class SubmitFunction(ot.OpenTURNSPythonFunction):
             nodes=nodes_per_job,
             timeout_min=timeout_per_job,
             slurm_wckey=slurm_wckey,
+            slurm_additional_parameters=slurm_additional_parameters
         )
 
     def _exec(self, X):
