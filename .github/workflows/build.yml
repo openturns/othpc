@@ -15,9 +15,13 @@ jobs:
       - name: Build
         shell: bash -l {0}
         run: |
-          conda install -y setuptools openturns submitit pandas flake8 sphinx sphinx_rtd_theme pandoc myst-parser numpydoc
+          conda install -y setuptools openturns submitit pandas tqdm flake8 pytest
           #flake8 --max-line-length=120
           pip install .
+          pytest test
+      - name: Doc
+        run: |
+          conda install -y sphinx sphinx_rtd_theme pandoc myst-parser numpydoc
           sudo apt install -y texlive-latex-recommended texlive-fonts-recommended texlive-latex-extra
           make html -C doc
       - name: Upload
