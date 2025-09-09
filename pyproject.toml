@@ -24,7 +24,15 @@ classifiers = [
 ]
 
 [tool.setuptools]
-packages = ["othpc"]
+packages = ["othpc",
+            "othpc.example",
+            "othpc.example.cantilever_beam",
+            "othpc.example.code_aster",
+            "othpc.example.load_simulator",
+            "othpc.example.warren_truss_structure"]
+
+[tool.setuptools.package-data]
+othpc = ["example/cantilever_beam/template/**"]
 
 [project.optional-dependencies]
 doc = ["numpydoc", "sphinx-gallery", "sphinx"]
