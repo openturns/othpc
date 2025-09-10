@@ -32,5 +32,5 @@ jobs:
           git config user.name "GitHub Actions"
           git add -A .
           if test `git diff HEAD | wc -c` -eq 0; then exit 0; fi
-          git commit -a -m "GitHub Actions build ${GITHUB_REPOSITORY} ${GITHUB_RUN_ID}"
+          git commit -a -m "GitHub Actions build ${GITHUB_REPOSITORY} ${GITHUB_RUN_ID}" || exit 0
           git push --quiet origin master > /dev/null 2>&1
