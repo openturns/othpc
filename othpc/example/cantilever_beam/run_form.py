@@ -14,7 +14,7 @@ my_results_directory = "my_results_algorithm"
 evals_per_job = 2
 cb = CantileverBeam(my_results_directory, n_cpus=evals_per_job)
 sf = othpc.SubmitFunction(
-    cb, tasks_per_job=evals_per_job, cpus_per_job=evals_per_job, timeout_per_job=5
+    cb, evals_per_job=evals_per_job, cpus_per_job=evals_per_job, timeout_per_job=5
 )
 f = ot.Function(sf)
 
