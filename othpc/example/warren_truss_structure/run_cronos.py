@@ -18,6 +18,6 @@ P = ot.Normal(-2000, 200)  # uniform load applied uniformally per node (in N, do
 distribution = ot.JointDistribution([E, A, P])
 X = distribution.getSample(int(5))
 truss_model = ot.PythonFunction(3, 1, warren_truss_displacement)
-slurm_truss_model = othpc.SubmitFunction(truss_model, evals_per_jobs=1, cpus_per_job=1, timeout_per_job=1)
+slurm_truss_model = othpc.SubmitFunction(truss_model, evals_per_job=1, cpus_per_job=1, timeout_per_job=1)
 Y = slurm_truss_model(X)
 print(Y)

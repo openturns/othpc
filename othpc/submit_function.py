@@ -22,8 +22,8 @@ class SubmitFunction(ot.OpenTURNSPythonFunction):
     callable : :py:class:`openturns.Function`
         The unit function for which can either be sequential (a unit evaluation only requires one CPU),
         multi-cores or multi-nodes (a unit evaluation requires multiple cores and possibly multiple nodes).
-    evals_per_jobs : int
-        Defines the number of tasks (or evaluations of the numerical simulation model) realized in each single SLURM jobs.
+    evals_per_job : int
+        Defines the number of tasks (or evaluations of the numerical simulation model) realized in each single SLURM job.
     nodes_per_job : int
         Defines the number of HPC nodes requested per SLURM job submitted.
     cpus_per_job : int
@@ -54,7 +54,7 @@ class SubmitFunction(ot.OpenTURNSPythonFunction):
     def __init__(
         self,
         callable,
-        evals_per_jobs=1,
+        evals_per_job=1,
         nodes_per_job=1,
         cpus_per_job=4,
         timeout_per_job=5,
@@ -65,7 +65,7 @@ class SubmitFunction(ot.OpenTURNSPythonFunction):
         super().__init__(callable.getInputDimension(), callable.getOutputDimension())
         self.setInputDescription(callable.getInputDescription())
         self.setOutputDescription(callable.getOutputDescription())
-        self.evals_per_jobs = evals_per_jobs
+        self.evals_per_job = evals_per_job
         self.nodes_per_job = nodes_per_job
         self.cpus_per_job = cpus_per_job
         self.timeout_per_job = timeout_per_job
@@ -90,11 +90,11 @@ class SubmitFunction(ot.OpenTURNSPythonFunction):
         # Divide input points across jobs (e.g. create batches)
         X = ot.Sample(X)
         X.setDescription(self.getInputDescription())
-        job_number = len(X) // self.evals_per_jobs
-        if len(X) % self.evals_per_jobs:
+        job_number = len(X) // self.evals_per_job
+        if len(X) % self.evals_per_job:
             job_number += 1  # an additional job is needed
         subsamples = [
-            X[self.evals_per_jobs * i : self.evals_per_jobs * (i + 1)]
+            X[self.evals_per_job * i : self.evals_per_job * (i + 1)]
             for i in range(job_number)
         ]
 

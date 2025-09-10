@@ -8,7 +8,7 @@ import pytest
 @pytest.fixture
 def model():
     cb = MPILoadSimulator(nb_mpi_proc=10, nb_slurm_nodes=2, simu_duration=2)
-    sf = othpc.SubmitFunction(cb, evals_per_jobs=1, cpus_per_job=1, timeout_per_job=10)
+    sf = othpc.SubmitFunction(cb, evals_per_job=1, cpus_per_job=1, timeout_per_job=10)
     f = ot.Function(sf)
     return f
 

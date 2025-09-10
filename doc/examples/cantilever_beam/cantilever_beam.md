@@ -84,7 +84,7 @@ Therefore, the evaluation of a sample of input points is distributed by `multipr
 ### Define an OpenTURNS function distributing its evaluations
 
 ```Python
-sf = othpc.SubmitFunction(cb, evals_per_jobs=2, cpus_per_job=2, timeout_per_job=5)
+sf = othpc.SubmitFunction(cb, evals_per_job=2, cpus_per_job=2, timeout_per_job=5)
 f = ot.Function(sf)
 ```
 As the evaluations of the `CantileverBeam` class are distributed over 2 CPUs here (see remark above), 
@@ -108,7 +108,7 @@ othpc.make_summary_file("my_results", summary_file="summary_table.csv")
 
 After running the previous Python script, one gets the following file-tree results. 
 In the folder `my_results`, 10 subfolders have been created with a unique hash, corresponding to each evaluation. 
-In the `logs` folder, 5 subfolders were created, corresponding to all the SLURM jobs submitted (since the argument `evals_per_jobs=2` here). 
+In the `logs` folder, 5 subfolders were created, corresponding to all the SLURM jobs submitted (since the argument `evals_per_job=2` here).
 
 ```
   ├── cantilever_beam
