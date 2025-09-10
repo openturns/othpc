@@ -20,7 +20,7 @@ class SubmitFunction(ot.OpenTURNSPythonFunction):
     Parameters
     ----------
     callable : :py:class:`openturns.Function`
-        The unit function for which can either be sequential (a unit evaulation only requires one CPU),
+        The unit function for which can either be sequential (a unit evaluation only requires one CPU),
         multi-cores or multi-nodes (a unit evaluation requires multiple cores and possibly multiple nodes).
     evals_per_jobs : int
         Defines the number of tasks (or evaluations of the numerical simulation model) realized in each single SLURM jobs.

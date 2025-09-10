@@ -8,11 +8,11 @@
 
 `othpc` is a simple Python tool that facilitates the evaluation of numerical models on a SLURM based High-Performance Computing (HPC) facility.
 
-The Python package allows to apply the Uncertainty Quantification (UQ) methods from OpenTURNS directly on a computationnaly costly numerical model (e.g., FEM or CFD model) deployed on HPC 
+The Python package allows one to apply the Uncertainty Quantification (UQ) methods from OpenTURNS directly on a computationally costly numerical model (e.g., FEM or CFD model) deployed on HPC.
 
 ### Minimal example
 
-Create a seperate script defining your function, here is an example for a script named `product_function.py`: 
+Create a separate script defining your function, here is an example for a script named `product_function.py`:
 
 ```Python
 # product_function.py
@@ -97,4 +97,4 @@ Package documentation : http://openturns.github.io/othpc/main/
 
 ## Contributors
 
-Elias Fekhari, Joseph Muré, Julien Schuller, Michaël Baudin, Pascal Borel.
+Elias Fekhari, Joseph Muré, Julien Schueller, Michaël Baudin, Pascal Borel.
