@@ -11,14 +11,18 @@ from othpc.example import CantileverBeam
 
 my_results_directory = "my_results"
 evals_per_job = 2
-cb = CantileverBeam(my_results_directory, n_cpus=evals_per_job)
+cb = CantileverBeam(my_results_directory, n_cpus=1, fake_load_time=10)
 
 sf = othpc.SubmitFunction(
-    cb, evals_per_job=evals_per_job, cpus_per_job=evals_per_job, timeout_per_job=5
+    cb,
+    ntasks_per_node=evals_per_job,
+    nodes_per_job=1,
+    cpus_per_task=1,
+    timeout_per_job=5,
 )
 f = ot.Function(sf)
 #
-X = ot.Sample.ImportFromCSVFile("input_doe/doe.csv", ",")
+X = ot.Sample.ImportFromCSVFile("input_doe/doe.csv", ",")[0:9]
 Y = f(X)
 print(Y)
 othpc.make_summary_file("my_results", summary_file="summary_table.csv")
