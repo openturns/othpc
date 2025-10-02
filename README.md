@@ -19,9 +19,8 @@ Create a separate script defining your function, here is an example for a script
 import openturns as ot
 
 class ProductFunction(ot.OpenTURNSPythonFunction):
-    def __init__(self, n_cpus=1):
+    def __init__(self):
         super().__init__(2, 1)
-        self.n_cpus = n_cpus
 
     def _exec(self, x):
         return [x[0] * x[1]]
@@ -33,8 +32,8 @@ import othpc
 import openturns as ot 
 from product_function import ProductFunction
 
-ot_product = ProductFunction(n_cpus=3)
-othpc_product = othpc.SubmitFunction(ot_product, evals_per_job=3, cpus_per_job=3, timeout_per_job=5)
+ot_product = ProductFunction()
+othpc_product = othpc.SubmitFunction(ot_product, ntasks_per_node=3, timeout_per_job=5)
 distribution = ot.JointDistribution([ot.Uniform(0., 1.), ot.Normal(0., 1.)])
 x_sample = distribution.getSample(12) # Monte Carlo sample with size N=12
 y_sample = othpc_product(x_sample) # Submits 4 SLURM jobs, each including a batch of 3 evaluations 
