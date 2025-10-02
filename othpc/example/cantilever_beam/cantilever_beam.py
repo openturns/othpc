@@ -13,7 +13,6 @@ import othpc
 from subprocess import CalledProcessError
 from xml.dom import minidom
 from othpc.utils import fake_load
-from multiprocessing import Pool
 
 
 class CantileverBeam(ot.OpenTURNSPythonFunction):
@@ -22,17 +21,21 @@ class CantileverBeam(ot.OpenTURNSPythonFunction):
 
     Parameters:
     ----------
-    results_directory : str 
-        Name of the result directory where the result sub-folders are written. 
+    results_directory : str
+        Name of the result directory where the result sub-folders are written.
 
     n_cpus : integer
-        Number of parallel evaluations realized by multiprocessing. 
+        Number of parallel evaluations realized by multiprocessing.
+
+    fake_load_time : int
+        Duration in seconds of a fake computational load used to simulate long computations.
     """
 
-    def __init__(self, results_directory, n_cpus=1):
+    def __init__(self, results_directory, n_cpus=1, fake_load_time=10):
         super().__init__(4, 1)
         self.setInputDescription(["F", "E", "L", "I"])
         self.setOutputDescription(["Y"])
+        self.fake_load_time = fake_load_time
         #
         template_dir = os.path.join(os.path.dirname(__file__), "template")
         input_template_file = os.path.join(template_dir, "beam_input_template.xml")
@@ -58,7 +61,6 @@ class CantileverBeam(ot.OpenTURNSPythonFunction):
             pass
         self.results_directory = results_directory
         self.n_cpus = n_cpus
-        
 
     def _create_input_files(self, x, simulation_directory):
         """
@@ -127,7 +129,9 @@ class CantileverBeam(ot.OpenTURNSPythonFunction):
                 )
                 # Parse outputs
                 y = self._parse_output(simu_dir)
-                fake_load(10)  # Creates a fake load simulator for x sec.
+                fake_load(
+                    self.fake_load_time
+                )  # Creates a fake load simulator for x sec.
                 print(f"RUN {simu_dir[-30:]} - {time.ctime(time.time())}")
             except CalledProcessError as error:
                 othpc.evaluation_error_log(
@@ -137,17 +141,3 @@ class CantileverBeam(ot.OpenTURNSPythonFunction):
             # Write input-output summary csv file
             othpc.make_report_file(simu_dir, x, [y])
         return [y]
-
-    def _exec_sample(self, X):
-        """
-        Executes a set of evaluations of the black-box model.
-
-        Parameters
-        ----------
-        X : ot.Sample
-            Input sample to be evaluated in parallel.
-        """
-        with Pool(processes=self.n_cpus) as p:
-            outputs = p.map(self._exec, X)
-        return outputs
-
