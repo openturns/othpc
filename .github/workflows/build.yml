@@ -18,7 +18,7 @@ jobs:
           conda install -y setuptools openturns submitit pandas flake8 sphinx sphinx_rtd_theme pandoc myst-parser numpydoc
           #flake8 --max-line-length=120
           pip install .
-          sudo apt install -y texlive-latex-recommended texlive-fonts-recommended texlive-latex-extra
+          sudo apt update -y && sudo apt install -y texlive-latex-recommended texlive-fonts-recommended texlive-latex-extra
           make html -C doc
       - name: Upload
         if: ${{ github.ref == 'refs/heads/main' }}
