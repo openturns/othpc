@@ -17,7 +17,6 @@ Create a separate script defining your function, here is an example for a script
 ```Python
 # product_function.py
 import openturns as ot
-from multiprocessing import Pool
 
 class ProductFunction(ot.OpenTURNSPythonFunction):
     def __init__(self, n_cpus=1):
@@ -26,10 +25,6 @@ class ProductFunction(ot.OpenTURNSPythonFunction):
 
     def _exec(self, x):
         return [x[0] * x[1]]
-
-    def _exec_sample(self, X):
-        with Pool(processes=self.n_cpus) as p:
-            return p.map(self._exec, X)
 ```
 
 Write the following launching script:
