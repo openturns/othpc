@@ -106,15 +106,23 @@ class SubmitFunction(ot.OpenTURNSPythonFunction):
         if not task_number < len(X):
             return [float("nan")] * self.getOutputDimension()
 
+        # Write input to CSV file for future reference
+        x = X[task_number]
+        input_as_sample = ot.Sample([x])
+        input_as_sample.setDescription(self.getInputDescription())
+        folder = os.path.join("logs", jobid)
+        input_file = os.path.join(folder, f"{jobid}_{task_number}_input.csv")
+        input_as_sample.exportToCSVFile(input_file)
+
         # Actual call to the callable
-        output = self.callable(X[task_number])
+        output = self.callable(x)
 
         # Save output to CSV file in case the job fails
         # because some other task fails
         output_as_sample = ot.Sample([output])
-        folder = os.path.join("logs", jobid)
-        file = os.path.join(folder, f"{jobid}_{task_number}_output.csv")
-        output_as_sample.exportToCSVFile(file)
+        output_as_sample.setDescription(self.getOutputDescription())
+        output_file = os.path.join(folder, f"{jobid}_{task_number}_output.csv")
+        output_as_sample.exportToCSVFile(output_file)
 
         return output
 
