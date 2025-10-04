@@ -91,11 +91,15 @@ Note that the `CantileverBeam` relies on auxiliary files that can be found at th
 sf = othpc.SubmitFunction(cb, ntasks_per_node=2, nodes_per_job=1, cpus_per_task=1, timeout_per_job=5)
 f = ot.Function(sf)
 ```
-Here, every SLURM job is asked to perform up to 2 tasks (since 2 tasks are created per node and there is only 1 node). In the `SubmitFunction` context, a task means an evalutation of the simulation model, so this means that every job will be able to perform 2 evaluations of `CantileverBeam`.
+Here, every SLURM job is asked to perform up to 2 tasks (since 2 tasks are created per node and there is only 1 node).
+In the `SubmitFunction` context, a task means an evalutation of the simulation model, so this means that every job will be able to perform 2 evaluations of `cb`.
 
-Moreover, as many jobs will be submitted to SLURM as necessary by the `SubmitFunction` to evaluate `CantileverBeam` on all points we want to evaluate `CantileverBeam` on. If we want to evaluate `CantileverBeam` on a 10-point sample, then 5 jobs with 2 tasks will be submitted. If we want to evaluate it on an 11-point sample, then 5 jobs with 2 tasks and 1 job with 1 task will be created.
+When `f` or `sf` is applied to a sample of input points, it submits as many jobs as necessary to SLURM in order to apply `cb` to each point.
+For example, if `f` or `sf` is applied to a 10-point sample, it will submit 5 jobs with 2 tasks (meaning 2 calls to `cb`).
+If `f`or `sf` is applied to an 11-point sample, it will submit 5 jobs with 2 tasks and 1 job with 1 task.
 
-It is also possible to control the number of CPUs allocated to a single task, which can be useful for multi-threaded simulation code.
+It is also possible to control the number of CPUs allocated to a single task with `cpus_per_task`, which can be useful for multi-threaded simulation code.
+In the `CantileverBeam` case however, each evaluation only requires one CPU so `cpus_per_task=1`.
 
 ### Define an input design of experiments with size `N=10` and evaluate it on the HPC
 

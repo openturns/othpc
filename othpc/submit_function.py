@@ -35,6 +35,7 @@ class SubmitFunction(ot.OpenTURNSPythonFunction):
         Passed to SLURM as `--nodes`.
     cpus_per_task : int
         Number of CPUs required to perform one task, i.e. one evaluation of *callable*.
+        Passed to SLURM as `--cpus-per-task`.
     mem : int
         Memory (in MB) requested per node.
         Passed to SLURM as `--mem`.
