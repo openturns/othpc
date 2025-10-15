@@ -64,7 +64,7 @@ The requirements for this example include:
   |   ├── my_results 
   ```
 
-## 3- How to run an `othpc` script?
+## 3- Write an `othpc` script
 
 
 ### Define the simulation model
@@ -119,7 +119,31 @@ gather all your results in a single summary file.
 othpc.make_summary_file("my_results", summary_file="summary_table.csv")
 ```
 
-## 3- Resulting file tree
+## 4- Run the script
+
+Assuming the script is called `cantilever_beam.py`, then it can be run on the cluster using the command:
+
+```
+(myenv) [NNI-crfront1-pts48] ~$ python cantilever_beam.py
+```
+
+However, the downside of this simple command is that it requires the terminal to be kept open in order to keep running. This means that if the connection to the cluster is lost, the command stops running prematurely.
+
+A simple solution is to use the [`nohup` command](https://www.digitalocean.com/community/tutorials/nohup-command-in-linux):
+
+```
+(myenv) [NNI-crfront1-pts48] ~$ nohup python cantilever_beam.py &
+```
+
+This will keep the Python process alive even if the connection to the cluster is lost. This way results can be retrieved at a later date. Please note that the `nohup` command will print a process ID (for example `2565`). Write it down so you can kill the process if you need to:
+
+```
+(myenv) [NNI-crfront1-pts48] ~$ kill 2565
+```
+
+A possible alternative to `nohup`, which has the advantage of also working if you are running an interactive Python process, is the [`tmux` terminal multiplexer](https://hamvocke.com/blog/a-quick-and-easy-guide-to-tmux/).
+
+## 5- Resulting file tree
 
 After running the previous Python script, one gets the following file-tree results. 
 In the folder `my_results`, 10 subfolders have been created with a unique hash, corresponding to each evaluation. 
