@@ -73,13 +73,12 @@ Among the services possibly provided by the package:
 
 
 
-## :floppy_disk: How to install?
+## How to install?
 
-The package has not been deployed on a downloading platform yet (e.g., pip and conda), to install the current development: 
+To install the current version:
 
 ```bash
-git clone https://github.com/openturns/othpc.git
-pip install -e othpc/
+pip install othpc
 ``` 
 
 
