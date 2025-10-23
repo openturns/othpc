@@ -79,8 +79,13 @@ To install the current version:
 
 ```bash
 pip install othpc
-``` 
+```
 
+or, from conda:
+
+```bash
+conda install conda-forge::othpc
+```
 
 ## Documentation
 
