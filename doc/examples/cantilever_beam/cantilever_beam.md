@@ -25,25 +25,23 @@ where `beam_input.xml` is the input file containing the four parameter. Note tha
 
 ## 1- Prepare your environment on the cluster
 
-The following commands suit the users who have access to one of the clusters owned by EDF (in the following the cluster is name CRONOS). 
-- Connect to CRONOS, create your Python environment called `myenv` using conda-forge:
-  ```
-  NNI@dspxxxxxxx:~$ ssh cronos
-  [NNI-crfront1-pts48] ~ $ module load Miniforge3
-  [NNI-crfront1-pts48] ~ $ conda create -n myenv 
-  ```
-  The creation of your environment (second line), does not need to be repeated at each connection.
+The following commands are designed for users who have access to one of the clusters owned by EDF (in the following the cluster is name CRONOS).
 
-- Clone the git repository (if you are in a non-EDF setting, use the GitHub mirror at <https://github.com/openturns/othpc> instead) in your "scratch" space and create your branch:
-  ```
-  (myenv) [NNI-crfront1-pts48] ~$ cd /scratch/users/{NNI}/
-  (myenv) [NNI-crfront1-pts48] ~$ git clone https://gitlab.pleiade.edf.fr/projet-incertitudes/openturns/openturns/actions-openturns/othpc
-  (myenv) [NNI-crfront1-pts48] ~$ pip install -e othpc/
-  ```
+Connect to CRONOS, create your Python environment called `myenv` using conda-forge:
+```
+NNI@dspxxxxxxx:~$ ssh cronos
+[NNI-crfront1-pts48] ~ $ module load Miniforge3
+[NNI-crfront1-pts48] ~ $ conda create -n myenv othpc
+```
+The creation of your environment (last line), does not need to be repeated at each connection.
 
-## 2- Files required for the cantilever beam  
+## 2- Files required for the cantilever beam
 
-The requirements for this example include:
+In the following, we use the `CantileverBeam` class, which is available from the `othpc.example` module. You may have a look at [its code](https://github.com/openturns/othpc/blob/main/othpc/example/cantilever_beam/cantilever_beam.py) for an example of how to wrap a simulation model within a child class of `OpenTURNSPythonFunction`.
+
+To run this example, you will need to clone the `othpc` repository either from [GitHub](https://github.com/openturns/othpc) (if you do not work at EDF) or from the [EDF GitLab instance](https://gitlab.pleiade.edf.fr/projet-incertitudes/openturns/openturns/actions-openturns/othpc) (if you work at EDF) and copy the [`othpc/example/cantilever_beam`](https://github.com/openturns/othpc/blob/main/othpc/example/cantilever_beam) folder to, for example, a `cantilever_beam` folder within your home folder.
+
+The `cantilever_beam` folder includes:
 
 - Template input file (here, `template/beam_input_template.xml`);
 
@@ -53,26 +51,25 @@ The requirements for this example include:
 
 - Output folder for my results (here, `my_results`)
 
-  In the case of the cantilever beam, this is its content:
-  ```
-  ├── cantilever_beam
-  |   ├── input_doe
-  |   |    ├── doe.csv 
-  |   ├── template
-  |   |    ├── beam.exe
-  |   |    ├── beam_input_template.xml
-  |   ├── my_results 
-  ```
+It is organized as follows:
+```
+├── cantilever_beam
+|   ├── input_doe
+|   |    ├── doe.csv 
+|   ├── template
+|   |    ├── beam.exe
+|   |    ├── beam_input_template.xml
+|   ├── my_results 
+```
 
 ## 3- Write an `othpc` script
 
+In the context of this example, the Python working directoy must be the `cantilever_beam` folder. You can check the Python working directory by running the `os.getcwd()` Python command.
 
 ### Define the simulation model
 
 To be able to use `othpc` you will need to encapsulate your simulation model within an OpenTURNS `Function` object,
 usually implemented as a child class of [OpenTURNSPythonFunction](https://openturns.github.io/openturns/master/user_manual/_generated/openturns.OpenTURNSPythonFunction.html).
-
-In the following, we use the `CantileverBeam` class, which is available from the `othpc.example` module. You may have a look at [its code](https://github.com/openturns/othpc/blob/main/othpc/example/cantilever_beam/cantilever_beam.py) for an example of how to wrap a simulation model within a child class of `OpenTURNSPythonFunction`.
 
 ```Python
 import othpc
@@ -82,8 +79,6 @@ from othpc.example import CantileverBeam
 my_results_directory = "my_results"
 cb = CantileverBeam(my_results_directory)
 ```
-
-Note that the `CantileverBeam` relies on auxiliary files that can be found at the URL <https://github.com/openturns/othpc/tree/main/othpc/example/cantilever_beam>.
 
 ### Define a SubmitFunction to distribute its evaluations on the cluster
 
@@ -121,10 +116,10 @@ othpc.make_summary_file("my_results", summary_file="summary_table.csv")
 
 ## 4- Run the script
 
-Assuming the script is called `cantilever_beam.py`, then it can be run on the cluster using the command:
+Assuming the script containing the commands described in the previous section is called `run_cantilever_beam.py`, then it can be run on the cluster using the command:
 
 ```
-(myenv) [NNI-crfront1-pts48] ~$ python cantilever_beam.py
+(myenv) [NNI-crfront1-pts48] ~/cantilever_beam $ python run_cantilever_beam.py
 ```
 
 However, the downside of this simple command is that it requires the terminal to be kept open in order to keep running. This means that if the connection to the cluster is lost, the command stops running prematurely.
@@ -132,20 +127,20 @@ However, the downside of this simple command is that it requires the terminal to
 A simple solution is to use the [`nohup` command](https://www.digitalocean.com/community/tutorials/nohup-command-in-linux):
 
 ```
-(myenv) [NNI-crfront1-pts48] ~$ nohup python cantilever_beam.py &
+(myenv) [NNI-crfront1-pts48] ~/cantilever_beam $ nohup python run_cantilever_beam.py &
 ```
 
 This will keep the Python process alive even if the connection to the cluster is lost. This way results can be retrieved at a later date. Please note that the `nohup` command will print a process ID (for example `2565`). Write it down so you can kill the process if you need to:
 
 ```
-(myenv) [NNI-crfront1-pts48] ~$ kill 2565
+(myenv) [NNI-crfront1-pts48] ~/cantilever_beam $ kill 2565
 ```
 
 A possible alternative to `nohup`, which has the advantage of also working if you are running an interactive Python process, is the [`tmux` terminal multiplexer](https://hamvocke.com/blog/a-quick-and-easy-guide-to-tmux/).
 
 ## 5- Resulting file tree
 
-After running the previous Python script, one gets the following file-tree results. 
+After running the Python script, one gets the following file-tree results. 
 In the folder `my_results`, 10 subfolders have been created with a unique hash, corresponding to each evaluation. 
 In the `logs` folder, 5 subfolders were created, corresponding to all the SLURM jobs submitted (since `ntasks_per_node=2` and `nodes_per_job=1` were passed as argument to the `SubmitFunction`).
 
