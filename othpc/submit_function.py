@@ -28,7 +28,7 @@ class SubmitFunction(ot.OpenTURNSPythonFunction):
     timeout_per_job : int
         Timeout requested (in minutes) per SLURM job.
     ntasks_per_node : int
-        Number of tasks (a task is a single evaluation of *callable*) that can be handled by a single SLURM job.
+        Number of tasks (a task is a single evaluation of *callable*) that can be handled by a single node.
         Passed to SLURM as `--ntasks-per-node`.
     nodes_per_job : int
         Number of HPC nodes requested per SLURM job submitted.
