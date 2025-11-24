@@ -17,8 +17,8 @@ from .utils import evaluation_error_log
 
 class SubmitFunction(ot.OpenTURNSPythonFunction):
     """
-    The aim of this class is to ease the realization of parallel evaluations of a numerical simulation model in a HPC environment.
-    This class gives an example of a HPC wrapper for an executable numerical model using the Python package `submitit <https://github.com/facebookincubator/submitit>`_.
+    The aim of this class is to run parallel evaluations of a numerical simulation model in a HPC environment.
+    It is based on the Python package `submitit <https://github.com/facebookincubator/submitit>`_.
 
     Parameters
     ----------
