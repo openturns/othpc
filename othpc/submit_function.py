@@ -68,7 +68,7 @@ class SubmitFunction(ot.OpenTURNSPythonFunction):
         nodes_per_job=1,
         cpus_per_task=1,
         mem=16000,
-        slurm_wckey="P120K:SALOME",
+        slurm_wckey="P12H8:SALOME",
         slurm_additional_parameters={},
     ):
         super().__init__(callable.getInputDimension(), callable.getOutputDimension())
