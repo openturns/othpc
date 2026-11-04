@@ -7,7 +7,9 @@ API Reference
     :toctree: _generated/
     :template: class.rst_t
 
-    SubmitFunction
+    DistributedFunction
+    DistributedFunction
+    DistributedMPIFunction
     TempSimuDir
 
 .. autosummary::
