@@ -13,8 +13,8 @@ from openturns.usecases import cantilever_beam
 my_results_directory = "my_results_algorithm"
 evals_per_job = 2
 cb = CantileverBeam(my_results_directory, n_cpus=1, fake_load_time=1)
-sf = othpc.SubmitFunction(
-    cb, ntasks_per_node=evals_per_job, cpus_per_task=1, timeout_per_job=5
+sf = othpc.DistributedFunction(
+    cb, ntasks_per_node=evals_per_job, timeout_per_job=5
 )
 f = ot.Function(sf)
 

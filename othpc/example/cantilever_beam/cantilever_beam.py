@@ -24,14 +24,11 @@ class CantileverBeam(ot.OpenTURNSPythonFunction):
     results_directory : str
         Name of the result directory where the result sub-folders are written.
 
-    n_cpus : integer
-        Number of parallel evaluations realized by multiprocessing.
-
     fake_load_time : int
         Duration in seconds of a fake computational load used to simulate long computations.
     """
 
-    def __init__(self, results_directory, n_cpus=1, fake_load_time=10):
+    def __init__(self, results_directory, fake_load_time=10):
         super().__init__(4, 1)
         self.setInputDescription(["F", "E", "L", "I"])
         self.setOutputDescription(["Y"])
@@ -60,7 +57,6 @@ class CantileverBeam(ot.OpenTURNSPythonFunction):
         except FileExistsError:
             pass
         self.results_directory = results_directory
-        self.n_cpus = n_cpus
 
     def _create_input_files(self, x, simulation_directory):
         """

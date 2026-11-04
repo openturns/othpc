@@ -1,6 +1,7 @@
 """othpc module."""
 
-from .submit_function import SubmitFunction
+from .distributed_function import DistributedFunction
+from .distributed_mpi_function import DistributedMPIFunction
 from .utils import (
     TempSimuDir,
     make_report_file,
@@ -26,7 +27,8 @@ if Version(_ot.__version__) < Version("1.25"):
     _OTCalledProcessError.__str__ = _OTCalledProcessError_str
 
 __all__ = [
-    "SubmitFunction",
+    "DistributedFunction",
+    "DistributedMPIFunction",
     "TempSimuDir",
     "make_report_file",
     "make_summary_file",

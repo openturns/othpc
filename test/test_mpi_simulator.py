@@ -7,8 +7,8 @@ import pytest
 
 @pytest.fixture
 def model():
-    cb = MPILoadSimulator(nb_mpi_proc=10, nb_slurm_nodes=2, simu_duration=2)
-    sf = othpc.SubmitFunction(cb, timeout_per_job=10)
+    cb = MPILoadSimulator(nb_mpi_proc=10, simu_duration=2)
+    sf = othpc.DistributedMPIFunction(cb, timeout_per_job=10)
     f = ot.Function(sf)
     return f
 

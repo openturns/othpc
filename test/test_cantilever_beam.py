@@ -16,7 +16,7 @@ def model():
     my_results_directory = "my_results"
     shutil.rmtree(my_results_directory, ignore_errors=True)
     cb = CantileverBeam(my_results_directory, n_cpus=1, fake_load_time=1)
-    sf = othpc.SubmitFunction(cb, ntasks_per_node=2, cpus_per_task=1, timeout_per_job=5)
+    sf = othpc.DistributedFunction(cb, ntasks_per_node=2, timeout_per_job=5)
     f = ot.Function(sf)
     return f
 

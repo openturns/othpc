@@ -2,5 +2,5 @@ import doctest
 import othpc
 
 
-def test_submitfunction_doctest():
-    doctest.testmod(othpc.submit_function, optionflags=doctest.ELLIPSIS)
+def test_DistributedFunction_doctest():
+    doctest.testmod(othpc.distributed_function, optionflags=doctest.ELLIPSIS)

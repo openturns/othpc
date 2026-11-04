@@ -9,11 +9,12 @@ import othpc
 import openturns as ot
 from MPILoadSimulator import MPILoadSimulator
 
-cb = MPILoadSimulator(
-    nb_mpi_proc=10, nb_slurm_nodes=2, simu_duration=2, slurm_timeout=5
+ls = MPILoadSimulator(nb_mpi_proc=64, simu_duration=180)
+dls = othpc.DistributedMPIFunction(
+    ls, ntasks_per_node=34, nodes_per_job=2, cpus_per_task=1, timeout_per_job=5, 
+    # slurm_additional_parameters={"qos":"test"}
 )
-sf = othpc.SubmitFunction(cb, timeout_per_job=5)
-f = ot.Function(sf)
+f = ot.Function(dls)
 X = ot.Sample.ImportFromCSVFile("input_doe/doe_small.csv", ",")
 Y = f(X[:3])
 print(Y)

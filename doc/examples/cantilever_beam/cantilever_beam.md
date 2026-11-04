@@ -1,6 +1,6 @@
 # Cantilever beam tutorial
 
-The simple example of the cantilever beam allows us to illustrate how to use the `SubmitFunction` class. This example is based on a quick numerical model, which was proposed in the [documentation of the otwrapy OpenTURNS module](https://openturns.github.io/otwrapy/master/beam_wrapper.html).
+The simple example of the cantilever beam allows us to illustrate how to use the `DistributedFunction` class. This example is based on a quick numerical model, which was proposed in the [documentation of the otwrapy OpenTURNS module](https://openturns.github.io/otwrapy/master/beam_wrapper.html).
 
 In this case, the numerical model is an executable that computes the deviation of a beam under bending stress according to the following expression:  
 ```{math}
@@ -80,21 +80,22 @@ my_results_directory = "my_results"
 cb = CantileverBeam(my_results_directory)
 ```
 
-### Define a SubmitFunction to distribute its evaluations on the cluster
+### Define a DistributedFunction to distribute its evaluations on the cluster
 
 ```Python
-sf = othpc.SubmitFunction(cb, ntasks_per_node=2, nodes_per_job=1, cpus_per_task=1, timeout_per_job=5)
+sf = othpc.DistributedFunction(cb, ntasks_per_node=2, nodes_per_job=1, timeout_per_job=5)
 f = ot.Function(sf)
 ```
 Here, every SLURM job is asked to perform up to 2 tasks (since 2 tasks are created per node and there is only 1 node).
-In the `SubmitFunction` context, a task means an evalutation of the simulation model, so this means that every job will be able to perform 2 evaluations of `cb`.
+In the `DistributedFunction` context, a task means an evalutation of the simulation model, so this means that every job will be able to perform 2 evaluations of `cb`.
 
 When `f` or `sf` is applied to a sample of input points, it submits as many jobs as necessary to SLURM in order to apply `cb` to each point.
 For example, if `f` or `sf` is applied to a 10-point sample, it will submit 5 jobs with 2 tasks (meaning 2 calls to `cb`).
 If `f`or `sf` is applied to an 11-point sample, it will submit 5 jobs with 2 tasks and 1 job with 1 task.
 
-It is also possible to control the number of CPUs allocated to a single task with `cpus_per_task`, which can be useful for multi-threaded simulation code.
-In the `CantileverBeam` case however, each evaluation only requires one CPU so `cpus_per_task=1`.
+
+Note that for multi-threaded simulation code, the `DistributedFunction` class should be used and the `cpus_per_task` can then be bigger than 1. 
+In the `CantileverBeam` case however, each evaluation only requires one CPU, which is why the `DistributedFunction` is used (equivalent to having `cpus_per_task=1`).
 
 ### Define an input design of experiments with size `N=10` and evaluate it on the HPC
 
@@ -142,7 +143,7 @@ A possible alternative to `nohup`, which has the advantage of also working if yo
 
 After running the Python script, one gets the following file-tree results. 
 In the folder `my_results`, 10 subfolders have been created with a unique hash, corresponding to each evaluation. 
-In the `logs` folder, 5 subfolders were created, corresponding to all the SLURM jobs submitted (since `ntasks_per_node=2` and `nodes_per_job=1` were passed as argument to the `SubmitFunction`).
+In the `logs` folder, 5 subfolders were created, corresponding to all the SLURM jobs submitted (since `ntasks_per_node=2` and `nodes_per_job=1` were passed as argument to the `DistributedFunction`).
 
 ```
   ├── cantilever_beam

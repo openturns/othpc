@@ -72,7 +72,7 @@ def main(args, options):
 
     if rank == 0:
         totalSum = 0.0
-    # Function to mimic typical code restart mechanism
+        # Function to mimic typical code restart mechanism
         if options.restartPath:
             resultFile = open(os.path.join(options.restartPath, "result.txt"), "r")
             lines = resultFile.readlines()
@@ -87,7 +87,7 @@ def main(args, options):
     for elt in args:
         number = float(elt)
         totalSum += number
-    
+
     totalSum = math.sqrt(totalSum)
 
     # simulate program duration and associated cpu load
