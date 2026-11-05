@@ -12,11 +12,11 @@ from othpc.example import CantileverBeam
 
 my_results_directory = "my_results"
 evals_per_job = 2
-cb = CantileverBeam(my_results_directory, n_cpus=1, fake_load_time=1)
-sf = othpc.DistributedFunction(
+cb = CantileverBeam(my_results_directory, fake_load_time=1)
+df = othpc.DistributedFunction(
     cb, ntasks_per_node=evals_per_job, timeout_per_job=5
 )
-f = ot.Function(sf)
+f = ot.Function(df)
 memoize_func = othpc.load_cache(
     f, os.path.join(my_results_directory, "summary_table.csv")
 )

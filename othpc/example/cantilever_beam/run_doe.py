@@ -12,13 +12,13 @@ from othpc.example import CantileverBeam
 my_results_directory = "my_results"
 cb = CantileverBeam(my_results_directory)
 
-sf = othpc.DistributedFunction(
+df = othpc.DistributedFunction(
     cb,
     ntasks_per_node=2,
     nodes_per_job=1,
     timeout_per_job=5,
 )
-f = ot.Function(sf)
+f = ot.Function(df)
 #
 X = ot.Sample.ImportFromCSVFile("input_doe/doe.csv", ",")
 Y = f(X)

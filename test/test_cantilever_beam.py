@@ -15,9 +15,9 @@ def model():
     ot.ResourceMap.SetAsScalar("CenteredFiniteDifferenceGradient-DefaultEpsilon", 1e-3)
     my_results_directory = "my_results"
     shutil.rmtree(my_results_directory, ignore_errors=True)
-    cb = CantileverBeam(my_results_directory, n_cpus=1, fake_load_time=1)
-    sf = othpc.DistributedFunction(cb, ntasks_per_node=2, timeout_per_job=5)
-    f = ot.Function(sf)
+    cb = CantileverBeam(my_results_directory, fake_load_time=1)
+    df = othpc.DistributedFunction(cb, ntasks_per_node=2, timeout_per_job=5)
+    f = ot.Function(df)
     return f
 
 

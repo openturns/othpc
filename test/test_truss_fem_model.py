@@ -8,8 +8,8 @@ import pytest
 @pytest.fixture
 def model():
     truss_model = ot.PythonFunction(3, 1, warren_truss_displacement)
-    sf = othpc.DistributedFunction(truss_model, ntasks_per_node=2, timeout_per_job=5)
-    f = ot.Function(sf)
+    df = othpc.DistributedFunction(truss_model, ntasks_per_node=2, timeout_per_job=5)
+    f = ot.Function(df)
     return f
 
 

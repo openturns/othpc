@@ -83,15 +83,15 @@ cb = CantileverBeam(my_results_directory)
 ### Define a DistributedFunction to distribute its evaluations on the cluster
 
 ```Python
-sf = othpc.DistributedFunction(cb, ntasks_per_node=2, nodes_per_job=1, timeout_per_job=5)
-f = ot.Function(sf)
+df = othpc.DistributedFunction(cb, ntasks_per_node=2, nodes_per_job=1, timeout_per_job=5)
+f = ot.Function(df)
 ```
 Here, every SLURM job is asked to perform up to 2 tasks (since 2 tasks are created per node and there is only 1 node).
 In the `DistributedFunction` context, a task means an evalutation of the simulation model, so this means that every job will be able to perform 2 evaluations of `cb`.
 
-When `f` or `sf` is applied to a sample of input points, it submits as many jobs as necessary to SLURM in order to apply `cb` to each point.
-For example, if `f` or `sf` is applied to a 10-point sample, it will submit 5 jobs with 2 tasks (meaning 2 calls to `cb`).
-If `f`or `sf` is applied to an 11-point sample, it will submit 5 jobs with 2 tasks and 1 job with 1 task.
+When `f` or `df` is applied to a sample of input points, it submits as many jobs as necessary to SLURM in order to apply `cb` to each point.
+For example, if `f` or `df` is applied to a 10-point sample, it will submit 5 jobs with 2 tasks (meaning 2 calls to `cb`).
+If `f`or `df` is applied to an 11-point sample, it will submit 5 jobs with 2 tasks and 1 job with 1 task.
 
 
 Note that for multi-threaded simulation code, the `DistributedFunction` class should be used and the `cpus_per_task` can then be bigger than 1. 
