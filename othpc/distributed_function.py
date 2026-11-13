@@ -124,6 +124,11 @@ class DistributedFunction(ot.OpenTURNSPythonFunction):
         # Divide input points across jobs (e.g. create batches)
         X = ot.Sample(X)
         X.setDescription(self.getInputDescription())
+        if len(X) == 0:
+            empty = ot.Sample(0, self.getOutputDimension())
+            empty.setDescription(self.getOutputDescription())
+            return empty
+ 
         job_number = len(X) // self.tasks_per_job
         if len(X) % self.tasks_per_job:
             job_number += 1  # an additional job is needed

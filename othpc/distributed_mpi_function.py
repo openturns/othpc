@@ -145,6 +145,10 @@ class DistributedMPIFunction(ot.OpenTURNSPythonFunction):
         # Divide input points across jobs (e.g. create batches)
         X = ot.Sample(X)
         X.setDescription(self.getInputDescription())
+        if len(X) == 0:
+            empty = ot.Sample(0, self.getOutputDimension())
+            empty.setDescription(self.getOutputDescription())
+            return empty
         job_number = len(X)
 
         # Submit multiple jobs
