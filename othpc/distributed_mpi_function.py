@@ -23,8 +23,9 @@ class DistributedMPIFunction(ot.OpenTURNSPythonFunction):
     Parameters
     ----------
     callable : :py:class:`openturns.Function`
-        The unit function for which can either be sequential (a unit evaluation only requires one CPU),
-        multi-cores or multi-nodes (a unit evaluation requires multiple cores and possibly multiple nodes).
+        The unit MPI function which can be  multi-cores or multi-nodes 
+        (a unit evaluation requires multiple cores and possibly multiple nodes). 
+        Each job handles one evaluation of the MPI function.
     timeout_per_job : int
         Timeout requested (in minutes) per SLURM job.
     ntasks_per_node : int
