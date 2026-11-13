@@ -50,14 +50,20 @@ class DistributedMPIFunction(ot.OpenTURNSPythonFunction):
 
     Examples
     --------
-    >>> import othpc
-    >>> import openturns as ot
-    >>> from othpc.example import CantileverBeam
+    The example callable runs an MPI load simulation. Create its results
+    directory before constructing the model.
 
-    >>> cb = CantileverBeam("my_results")
-    >>> slurm_cb = othpc.DistributedFunction(cb)
-    >>> X = [[30e3, 28e6, 250.0, 400.0], [20e3, 35e6, 250.0, 400.0]]
-    >>> Y = slurm_cb(X)
+    >>> import os
+    >>> import othpc
+    >>> from othpc.example import MPILoadSimulator
+
+    >>> os.makedirs("my_results", exist_ok=True)
+    >>> simulator = MPILoadSimulator(nb_mpi_proc=10, results_directory="my_results")
+    >>> slurm_simulator = othpc.DistributedMPIFunction(
+    ...     simulator, ntasks_per_node=10, nodes_per_job=1
+    ... )
+    >>> X = [[1.0, 2.0], [3.0, 4.0]]
+    >>> Y = slurm_simulator(X)
     """
 
     def __init__(
@@ -69,7 +75,7 @@ class DistributedMPIFunction(ot.OpenTURNSPythonFunction):
         cpus_per_task=1,
         mem=16000,
         slurm_wckey="P12H8:SALOME",
-        slurm_additional_parameters={},
+        slurm_additional_parameters=None,
     ):
         super().__init__(callable.getInputDimension(), callable.getOutputDimension())
         self.setInputDescription(callable.getInputDescription())
@@ -84,7 +90,8 @@ class DistributedMPIFunction(ot.OpenTURNSPythonFunction):
         self.slurm_wckey = slurm_wckey
         self.callable = callable
 
-        slurm_additional_parameters.update(
+        slurm_parameters = dict(slurm_additional_parameters or {})
+        slurm_parameters.update(
             {"ntasks_per_node": ntasks_per_node, "nodes": nodes_per_job}
         )
 
@@ -97,8 +104,11 @@ class DistributedMPIFunction(ot.OpenTURNSPythonFunction):
             cpus_per_task=cpus_per_task,
             slurm_mem=mem,
             slurm_wckey=slurm_wckey,
-            slurm_additional_parameters=slurm_additional_parameters,
-            use_srun=False,
+            slurm_additional_parameters=slurm_parameters,
+            # The callable is expected to relies on MPI, 
+            # so srun is not needed and would would create 
+            # duplicate instances of the callable execution. 
+            slurm_use_srun=False,
         )
 
     def job(self, x):
@@ -154,12 +164,15 @@ class DistributedMPIFunction(ot.OpenTURNSPythonFunction):
         for job in jobs:
             try:
                 partial_results_list.append(job.results())
-            except:  # Case where the job failed
+            except Exception as error:  # Case where the job failed
                 output_point = [float("nan")] * self.getOutputDimension()
+                job_error = job.exception()
+                if job_error is None:
+                    job_error = error
                 evaluation_error_log(
-                    Exception(job.exception()),
+                    job_error,
                     "logs",
-                    f"LikelyTimeout_{job.job_id}.txt",
+                    f"JobFailure_{job.job_id}.txt",
                 )
                 partial_results_list.append([output_point])
         results = ot.Sample(concatenate(partial_results_list, axis=0))

@@ -184,9 +184,12 @@ def evaluation_error_log(error, simulation_directory, name="evaluation_error.txt
     )
     fh.setFormatter(formatter)
 
-    # Add the handler to the logger
-    logger.addHandler(fh)
-    logger.error(error)
+    try:
+        logger.addHandler(fh)
+        logger.error("%s", error)
+    finally:
+        logger.removeHandler(fh)
+        fh.close()
 
 
 def fake_load(duration=30):

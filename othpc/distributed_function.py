@@ -57,7 +57,7 @@ class DistributedFunction(ot.OpenTURNSPythonFunction):
         cpus_per_task=1,
         mem=16000,
         slurm_wckey="P12H8:SALOME",
-        slurm_additional_parameters={},
+        slurm_additional_parameters=None,
     ):
         super().__init__(callable.getInputDimension(), callable.getOutputDimension())
         self.setInputDescription(callable.getInputDescription())
@@ -71,6 +71,7 @@ class DistributedFunction(ot.OpenTURNSPythonFunction):
         self.mem = mem
         self.slurm_wckey = slurm_wckey
         self.callable = callable
+        slurm_parameters = dict(slurm_additional_parameters or {})
 
         # Setup submitit executor
         self.executor = submitit.AutoExecutor(folder="logs/%j")
@@ -81,7 +82,7 @@ class DistributedFunction(ot.OpenTURNSPythonFunction):
             cpus_per_task=cpus_per_task,
             slurm_mem=mem,
             slurm_wckey=slurm_wckey,
-            slurm_additional_parameters=slurm_additional_parameters,
+            slurm_additional_parameters=slurm_parameters,
         )
 
     def task(self, X):
@@ -148,9 +149,12 @@ class DistributedFunction(ot.OpenTURNSPythonFunction):
         for job in jobs:
             try:
                 partial_results_list.append(job.results())
-            except:  # Case where at least one task in the job failed
+            except Exception as error:  # Case where at least one task in the job failed
                 # Goal: reconstitute the results of the tasks which succeeded
                 input_size = job.submission().args[0].getSize()
+                job_error = job.exception()
+                if job_error is None:
+                    job_error = error
                 job_results = ot.Sample(input_size, self.getOutputDimension())
                 for task_number in range(input_size):  # for every task
                     # guess the name of the CSV file containing the output
@@ -164,9 +168,9 @@ class DistributedFunction(ot.OpenTURNSPythonFunction):
                     else:  # if the task failed
                         output_point = [float("nan")] * self.getOutputDimension()
                         evaluation_error_log(
-                            Exception(job.exception()),
+                            job_error,
                             "logs",
-                            f"LikelyTimeout_{job.job_id}_{task_number}.txt",
+                            f"JobFailure_{job.job_id}_{task_number}.txt",
                         )
                     job_results[task_number] = output_point
                 partial_results_list.append(job_results)

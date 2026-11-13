@@ -30,7 +30,7 @@ class CantileverBeam(ot.OpenTURNSPythonFunction):
 
     def __init__(self, results_directory, fake_load_time=10):
         super().__init__(4, 1)
-        self.setInputDescription(["F", "E", "L", "I"])
+        self.setInputDescription(["E", "F", "L", "I"])
         self.setOutputDescription(["Y"])
         self.fake_load_time = fake_load_time
         #
@@ -65,7 +65,7 @@ class CantileverBeam(ot.OpenTURNSPythonFunction):
         Parameters
         ----------
         x : list
-            Input point to be evaluated, in this example, inputs are (F, E, L, I).
+            Input point to be evaluated, in this example, inputs are (E, F, L, I).
 
         simulation_directory : str
             Simulation directory dedicated to the evaluation of the input point x.
@@ -76,7 +76,7 @@ class CantileverBeam(ot.OpenTURNSPythonFunction):
             self.input_template_file,
             # File written after replacing the tokens by the values in X
             os.path.join(simulation_directory, "beam_input.xml"),
-            ["@F@", "@E@", "@L@", "@I@"],
+            ["@E@", "@F@", "@L@", "@I@"],
             [x[0], x[1], x[2], x[3]],
         )
 
@@ -109,7 +109,7 @@ class CantileverBeam(ot.OpenTURNSPythonFunction):
         Parameters
         ----------
         x : list
-            Input point to be evaluated, in this example, inputs are (F, E, L, I).
+            Input point to be evaluated, in this example, inputs are (E, F, L, I).
         """
         with othpc.TempSimuDir(
             res_dir=self.results_directory, to_be_copied=[self.license_file]
