@@ -96,3 +96,18 @@ Package documentation : http://openturns.github.io/othpc/main/
 ## Contributors
 
 Elias Fekhari, Joseph Muré, Julien Schueller, Michaël Baudin, Pascal Borel.
+
+## Build and publish wheel on PyPI
+
+1. Add a new entry at the top of `ChangeLog`.
+2. Bump version in both `pyproject.toml` (`project.version`) and `othpc/__init__.py` (`__version__`).
+3. Build and upload:
+
+```bash
+pip install hatchling twine
+rm -rf dist
+python -m hatchling build
+twine upload dist/*
+```
+
+For conda, version bump should be automatically picked up by the bot, but if automatic update fails create a PR from a branch on a fork: https://github.com/conda-forge/othpc-feedstock
