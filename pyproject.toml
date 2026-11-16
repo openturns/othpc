@@ -1,12 +1,13 @@
 [build-system]
-requires = ["setuptools"]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
 
 [project]
 name = "othpc"
 version = "0.1"
 description = "Simplifies the evaluation of numerical simulation models on high performance computing facilities"
 readme = "README.md"
-dependencies = ["submitit>=1.5.4", "openturns", "tqdm", "pandas", "packaging", "setuptools"]
+dependencies = ["submitit>=1.5.4", "openturns", "tqdm", "pandas", "packaging"]
 authors = [
   {name = "Elias Fekhari"},
   {name = "Joseph Muré"},
@@ -23,16 +24,8 @@ classifiers = [
   "Topic :: Scientific/Engineering",
 ]
 
-[tool.setuptools]
-packages = ["othpc",
-            "othpc.example",
-            "othpc.example.cantilever_beam",
-            "othpc.example.code_aster",
-            "othpc.example.load_simulator",
-            "othpc.example.warren_truss_structure"]
-
-[tool.setuptools.package-data]
-othpc = ["example/cantilever_beam/template/**"]
+[tool.hatch.build.targets.wheel]
+packages = ["othpc"]
 
 [project.optional-dependencies]
 doc = ["numpydoc", "sphinx-gallery", "sphinx"]
